@@ -4,6 +4,7 @@
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
 import os
+
 print(os.getcwd())
 #os.chdir('Downloads/MemoriaSeminario2024')
 
@@ -13,8 +14,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-pd.set_option('display.max_columns', 20)
-pd.set_option('display.width', 200)
+pd.set_option('display.max_columns', 200)
+pd.set_option('display.width', 130)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
 if pd.__version__ != '2.2.2': raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
@@ -166,12 +167,12 @@ print(df.head())
 # En el dataset real
 idVariable_unicas=df['IdVariable'].unique()
 df_subset=df.query("IdVariable in @idVariable_unicas")
-df_varscols=df_subset.pivot(
+df_variables_en_columnas=df_subset.pivot(
   index=['Año', 'Mes', 'Fecha','IdAnalista'],
-  columns=['IdVariable', 'Variable'],
+  columns=['IdVariable'], #, 'Variable'],
   values='Expectativa')
-df_varscols.head()
-
+df_variables_en_columnas.head()
+df_variables_en_columnas.describe()
 
 # **====== PENDIENTE:**
 # 
@@ -234,16 +235,17 @@ analistasDistintosPorAño.to_frame().plot.bar(
 # In[ ]:
 
 
-inflacion_general_anual = df.query('IdVariable=="infgent"')
-
+inflacion_general_anual=df.query('IdVariable=="infgent"')
 inflacion_general_anual = inflacion_general_anual[['Año','Expectativa']] # Crea dataframe con sólo estas dos columnas
-display(inflacion_general_anual)
+print(inflacion_general_anual)
 
-inflacion_general_anual.plot.scatter(
+x=inflacion_general_anual.plot.scatter(
   x='Año', y='Expectativa',
   rot=70,
   figsize=(10, 5),
   color='purple', alpha=0.2)
+plt.show()
+plt.savefig('borrar.png',dpi=300)
 
 # Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
 axes = inflacion_general_anual.boxplot(
@@ -255,8 +257,6 @@ axes = inflacion_general_anual.boxplot(
 axes.set_title('Expectativa de Inflación General al cierre del año de la encuesta')
 
 
-# In[ ]:
-
 
 
 
@@ -267,8 +267,8 @@ axes.set_title('Expectativa de Inflación General al cierre del año de la encue
 
 
 # Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
-df_corrs=df_varscols.corr()
-print(f'Son {df_varscols.columns.size} variables.')
+df_corrs=df_variables_en_columnas.corr()
+print(f'Son {df_variables_en_columnas.columns.size} variables.')
 df_corrs.sample(4)
 
 
