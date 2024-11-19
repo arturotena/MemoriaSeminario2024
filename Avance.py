@@ -201,6 +201,7 @@ respuestasPorAño.to_frame().plot.bar(
   rot=70,
   figsize=(10, 5),
   color='darkblue')
+plt.show()
 
 analistasDistintosPorAño = df.groupby(by=["Año"])["IdAnalista"].unique().apply(len)
 analistasDistintosPorAño.name = 'Número de analistas distintos'
@@ -210,6 +211,7 @@ analistasDistintosPorAño.to_frame().plot.bar(
   rot=70,
   figsize=(10, 5),
   color ='darkred')
+plt.show()
 
 analistasDistintosPorAño = df.groupby(by=["Año"])["Variable"].unique().apply(len)
 analistasDistintosPorAño.name = 'Número de preguntas distintas'
@@ -219,6 +221,7 @@ analistasDistintosPorAño.to_frame().plot.bar(
   rot=70,
   figsize=(10, 5),
   color ='g')
+plt.show()
 
 
 # ---
@@ -245,7 +248,7 @@ x=inflacion_general_anual.plot.scatter(
   figsize=(10, 5),
   color='purple', alpha=0.2)
 plt.show()
-plt.savefig('borrar.png',dpi=300)
+#plt.savefig('borrar.png',dpi=300)
 
 # Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
 axes = inflacion_general_anual.boxplot(
@@ -255,6 +258,7 @@ axes = inflacion_general_anual.boxplot(
   figsize=(10, 5),
   color='purple')
 axes.set_title('Expectativa de Inflación General al cierre del año de la encuesta')
+plt.show()
 
 
 
