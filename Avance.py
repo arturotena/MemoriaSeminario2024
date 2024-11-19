@@ -91,6 +91,10 @@ if s_duplicados[s_duplicados==True].size > 0: raise Exception('Hay duplicados in
 # Un NombreCorto debe tener un solo NombreLargo y viceversa
 # (deben estar pareados los nombres relativos, y así mismo, los nombres absolutos;
 # es decir, debe haber una relación biunívoca en los valores de cada par.)
+#
+# No se busca incongruencias de variable por fecha, sino en el DataFrame completo,
+# por lo que pueden quedar eliminados registros con variables
+# que no necesariamente estén duplicadas en una fecha.
 def quita_duplicados(df_orig, df_busqueda, str_columna):
   """Elimina de df_orig los registros que tengan en la str_columna
   los valores que estén repetidos en df_busqueda.
@@ -134,137 +138,70 @@ print(f'Antes {cuenta_original} registros, ahora {cuenta_sin_incongruentes} es d
 
 xxx aqui voy. revisar si esta abajo todo el codigo del jupyther Avance.jnpy
 
-# Valores faltantes
+# 4.4. Valores faltantes
 if df.isnull().sum().sum() > 0: raise Exception('Hay valores faltantes y no se trataron')
 # No existen valores faltantes
 
-
-# ### Nombres incongruentes de variable
-# 
-# Un NombreRelativoCorto debe tener un sólo NombreRelativoLargo y viceversa.
-
-# In[ ]:
-
-
-# Obtiene pares únicos de nombres de variables
-df_variables=df[['NombreRelativoCorto','NombreRelativoLargo']].drop_duplicates()
-
-# Buscar más de un NombreRelativoCorto en cada NombreRelativoLargo
-s_incongr=df_variables['NombreRelativoLargo'].duplicated()
-cuenta=s_incongr[s_incongr==True].size
-print(f"Se detectaron {cuenta} NombreRelativoLargos con más de un NombreRelativoCorto.")
-if (cuenta != 0):
-  raise Exception(f"Se detectaron {cuenta} NombreRelativoLargos con más de un NombreRelativoCorto, falta eliminarlas")
-
-# Buscar más de un NombreRelativoLargo en cada NombreRelativoCorto
-s_incongr=df_variables['NombreRelativoCorto'].duplicated()
-cuenta=s_incongr[s_incongr==True].size
-if (cuenta == 0):
-  raise Exception(f"No se detectó ningún NombreRelativoLargo con más de un NombreRelativoCorto")
-print(f"Se detectaron {cuenta} NombreRelativoCorto con más de un NombreRelativoLargos:")
-df_incongruentes=df_variables.loc[s_incongr]
-display(df_incongruentes)
-print('----------------')
-
-# Se eliminan los renglones con NombreRelativoCorto incongruentes
-arr_variables_incongruentes=df_incongruentes['NombreRelativoCorto'].unique()
-print('Eliminando las siguientes variables con NombreRelativoCorto que tiene más de un NombreRelativoLargo:\n\t', arr_variables_incongruentes)
-df_sin_incongruentes=df.query("NombreRelativoCorto not in @arr_variables_incongruentes")
-
-print(f'Se eliminó el {(df.index.size-df_sin_incongruentes.index.size)/df.index.size*100:.2f} % de los renglones')
-df=df_sin_incongruentes
-
-
-# ## 4.3. Conversión de tipo de datos
-
-# In[ ]:
-
-
+# 4.5. Conversión de tipo de datos
 print('Antes:')
-display(df.dtypes)
-
+print(df.dtypes)
 # Convierte la FechaEncuesta a datetime
 df['FechaEncuesta'] = pd.to_datetime(df['FechaEncuesta'], errors='raise')
 print('\nDespués:')
-display(df.dtypes, df.head())
-
-
-# In[ ]:
-
-
+print(df.dtypes, df.head())
 # Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
 df.nunique()
 
-
-# ## 4.4. Agregar columnas calculadas
-
-# In[ ]:
-
-
+# 4.6. Agregar columnas calculadas
 df['AñoEncuesta'] = df['FechaEncuesta'].dt.year   # Columna con el año
 df['MesEncuesta'] = df['FechaEncuesta'].dt.month  # Columna con el número de mes
-display(df.dtypes, df.head(), df.tail())
+print(df.dtypes, df.head(), df.tail())
 
-
-# ## 4.5. Simplificar nombres columnas
-
-# In[ ]:
-
-
-# Simplifica el nombre de las columnas
+# 4.7. Simplificar nombres columnas
 print('Antes:\n', df.columns)
 df=df.rename(columns={
-  'FechaEncuesta'  :'Fecha',
+  'FechaEncuesta'      :'Fecha',
   'NombreRelativoCorto':'IdVariable',
   'NombreRelativoLargo':'Variable',
-  'IdAnalista'   :'IdAnalista',
-  'Dato'     :'Expectativa',
-  'AñoEncuesta'  :'Año',
-  'MesEncuesta'  :'Mes'
+  'IdAnalista'         :'IdAnalista',
+  'Dato'               :'Expectativa',
+  'AñoEncuesta'        :'Año',
+  'MesEncuesta'        :'Mes'
 })
 print('\nDespués:\n', df.columns)
-display(df.head())
+print(df.head())
 
-
-# ## 4.6. Homologación de valores
-
-# ### Orden renglones
-
-# In[ ]:
-
-
-# Se ve desordenado por fecha
+# 4.8. Orden
+# Renglones: ordenar por fecha, variable, analista.
 print('Antes:\n',df['Año'].unique())
-
-# Ordenar por fecha
 df=df.sort_values(by=['Año','Mes', 'Variable', 'IdAnalista'])
 print('Después:\n',df['Año'].unique())
-
-
-# ### Orden columnas
-
-# In[ ]:
-
-
+# Columnas
 print('Antes:')
-display(df.columns,df.head())
-
+print(df.columns)
+print(df.head())
 df = df.reindex(columns=['Fecha','Año', 'Mes','IdVariable','Variable','IdAnalista','Expectativa'])
-
 print('\nDespués:')
-display(df.columns,df.head())
+print(df.columns)
+print(df.head())
 
-
-# ### Homologación de Variables
-
-# #### Pasar las variables a columnas
-
-# In[ ]:
-
+# 4.9 Pasar las variables a columnas
 
 # En el dataset real
 uniqvars=df['IdVariable'].unique()
-uniqvars=np.delete(uniqvars,415)  # esta variable tiene repetidos, si se incluye aparece error: Index contains duplicate entries, cannot reshape
+uniqvars[415]
+
+df_var_problematica:pd.DataFrame=df.query('IdVariable=="limcrec24nivpreocmest"')
+df_var_problematica=df_var_problematica.query('Fecha=="2024-09-01"')
+df_var_problematica.groupby(by=['Fecha', 'Año', 'Mes', 'IdVariable', 'Variable', 'IdAnalista']).count()
+
+
+df.query('Fecha=="2024-09-01" and IdVariable=="limcrec24nivpreocmest"')
+xxx
+
+
+
+########uniqvars=np.delete(uniqvars,415)  # esta variable tiene repetidos, si se incluye aparece error: Index contains duplicate entries, cannot reshape
 df_subset=df.query("IdVariable in @uniqvars")
 df_varscols=df_subset.pivot(
   index=['Año', 'Mes', 'Fecha','IdAnalista'],
