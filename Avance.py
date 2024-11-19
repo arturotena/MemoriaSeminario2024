@@ -17,18 +17,10 @@ pd.set_option('display.max_columns', 20)
 pd.set_option('display.width', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
-def verifica_version(nombre, version, esperada):
-  """Verifica que la biblioteca tenga la versión esperada."""
-  if version != esperada:
-    raise Exception(f'Versión inesperada de {nombre}: {version}.')
-  print(f"Versión de {nombre} {version}: correcto.")
-
+if pd.__version__ != '2.2.2': raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
+if np.__version__ != '2.1.1': raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
 from matplotlib import __version__ as matplotlib_version
-
-verifica_version('Pandas', pd.__version__, '2.2.2')
-verifica_version('Numpy', np.__version__, '2.1.1')
-verifica_version('Matplotlib', matplotlib_version, '3.9.2')
-
+if matplotlib_version != '3.9.2': raise Exception(f'Versión inesperada de Matplotlib: {matplotlib_version}.')
 
 # ------------------------------------------------------------------------------
 # 2. Adquisición de datos
@@ -40,9 +32,7 @@ Microdatos_1999_01_csv_path = 'Microdatos_1999_01.csv'
 # Crea DataFrame con toda la historia
 df_exp1 = pd.read_csv(Microdatos_2020_01_csv_path, encoding='latin-1')
 df_exp2 = pd.read_csv(Microdatos_1999_01_csv_path, encoding='latin-1')
-df_raw = pd.concat([df_exp1, df_exp2], ignore_index=True) 
-  # ignore_index porque no son relevantes
-print(df_raw.head(3))
+df_raw = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque no son relevantes
 
 
 # ------------------------------------------------------------------------------
@@ -63,10 +53,10 @@ print(df_raw.head(3))
 print(df_raw.tail(3))
 print(df_raw.sample(10))
 
+print(df_raw.columns)
 # Las columnas son: 'FechaEncuesta', 'NombreAbsolutoCorto',
 # 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo',
 # 'IdAnalista', 'Dato'
-print(df_raw.columns)
 
 # Tipos de las columnas
 print(df_raw.dtypes)
