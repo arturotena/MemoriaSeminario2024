@@ -19,8 +19,8 @@ pd.set_option('display.width', 200)
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
 if pd.__version__ != '2.2.2': raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
 if np.__version__ != '2.1.1': raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
-from matplotlib import __version__ as matplotlib_version
-if matplotlib_version != '3.9.2': raise Exception(f'Versión inesperada de Matplotlib: {matplotlib_version}.')
+from matplotlib import __version__ as mpl_version
+if mpl_version != '3.9.2': raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
 
 # ------------------------------------------------------------------------------
 # 2. Adquisición de datos
@@ -32,7 +32,7 @@ Microdatos_1999_01_csv_path = 'Microdatos_1999_01.csv'
 # Crea DataFrame con toda la historia
 df_exp1 = pd.read_csv(Microdatos_2020_01_csv_path, encoding='latin-1')
 df_exp2 = pd.read_csv(Microdatos_1999_01_csv_path, encoding='latin-1')
-df_raw = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque no son relevantes
+df = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque no son relevantes
 
 
 # ------------------------------------------------------------------------------
@@ -43,44 +43,53 @@ df_raw = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque
 # en el conjunto de datos.
 
 # Dimensiones de los datos
-rows, cols = df_raw.shape
-if cols != 7 or rows <= 1500000: raise Exception(f"Se detectaron menos registros y/o columnas que antes.")
-if cols != 7 or rows > 1600000: raise Exception(f"Se detectaron más registros y/o columnas que antes.")
+rows, cols = df.shape
+if cols != 7: raise Exception(f"Se detectaron menos columnas que antes.")
+if rows <= 1500000: raise Exception(f"Se detectaron menos registros que antes.")
+if rows > 1600000: raise Exception(f"Se detectaron más registros que antes.")
 print(f'Hay 7 columnas y poco mas de un millón y medio de registros ({rows})')
 
 # Visualización de los primeros y últimos 3 renglones, y 10 aleatorios.
-print(df_raw.head(3))
-print(df_raw.tail(3))
-print(df_raw.sample(10))
+print(df.head(3))
+print(df.tail(3))
+print(df.sample(10))
 
-print(df_raw.columns)
+print(df.columns)
 # Las columnas son: 'FechaEncuesta', 'NombreAbsolutoCorto',
 # 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo',
 # 'IdAnalista', 'Dato'
 
 # Tipos de las columnas
-print(df_raw.dtypes)
+print(df.dtypes)
 # Sólo 2 se detectan como numéricas
 
 
 # ------------------------------------------------------------------------------
 # 4. Preparación de los datos
 
-# 4.1. Busca duplicados en todas las columnas
-s_duplicados=df_raw.duplicated(keep=False)
-print('Existen:', s_duplicados[s_duplicados==True].size, 'registros duplicados.')
-if s_duplicados[s_duplicados==True].size > 0: raise Exception('Hay duplicados inesperados.')
+# 4.1. Reducción de columnas
+# Se eliminan las columnas con nombre 'Absolutas',
+# porque son columnas derivadas de la columna FechaEncuesta y las columnas
+# con nombre 'Relativo' y, por tanto, no agregan valor para el análisis.
+df = df.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
+df.head()
 
-# 4.2. Busca duplicados sin la columna Dato
-# Sólo debería haber un sólo dato de expectativa para cada fecha, variable, analista.
-s_duplicados=df_raw[['FechaEncuesta', 'NombreAbsolutoCorto', 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo', 'IdAnalista']].duplicated(keep=False)
-print('Existen:', s_duplicados[s_duplicados==True].size, 'registros duplicados.')
-if s_duplicados[s_duplicados==True].size > 0: raise Exception('Hay duplicados inesperados.')
+# 4.2. Busca duplicados sin contar la columna Dato
+# Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
+s_duplicados=df[['FechaEncuesta', 'NombreRelativoCorto', 'NombreRelativoLargo', 'IdAnalista'
+                 ]].duplicated(keep=False)
+print('Existen:', s_duplicados[s_duplicados==True].size, 'registros duplicados, con la(s) variable(s):\n',
+      df[s_duplicados][['NombreRelativoCorto', 'NombreRelativoLargo']].drop_duplicates(keep='first'))
+cuenta_original=df.shape[0]
+df=df.drop_duplicates(subset=['FechaEncuesta', 'NombreRelativoCorto', 'NombreRelativoLargo', 'IdAnalista'],
+                       keep=False)
+cuenta_sin_dups=df.shape[0]
+print(f'Antes {cuenta_original} registros, ahora {cuenta_sin_dups} es decir {(cuenta_original - cuenta_sin_dups) / cuenta_original * 100:.1f} % menos')
 
 # 4.3. Busca incongruencias en variables
 # Un NombreCorto debe tener un solo NombreLargo y viceversa
-# (deben estar pareados los nombres relativos, y así mismo, los nombres absolutos;
-# es decir, debe haber una relación biunívoca en los valores de cada par.)
+# (deben estar pareados los nombres relativos;
+# es decir, los valores deben tener una relación biunívoca.)
 #
 # No se busca incongruencias de variable por fecha, sino en el DataFrame completo,
 # por lo que pueden quedar eliminados registros con variables
@@ -89,66 +98,43 @@ def quita_duplicados(df_orig, df_busqueda, str_columna):
   """Elimina de df_orig los registros que tengan en la str_columna
   los valores que estén repetidos en df_busqueda.
   Regresa: el DataFrame sin los registros encontrados."""
-  df_columna=df_busqueda[[str_columna]]
-  duplicados_columna = df_columna.duplicated()
-  ser_duplicados = df_columna.loc[duplicados_columna].drop_duplicates()[str_columna]
-  df_resultado=df_orig.query(str_columna + ' not in @ser_duplicados')
-  print(f'Se eliminaron {ser_duplicados.size} registros con {str_columna} duplicados: {ser_duplicados.sort_values().values}')
+  df_columna = df_busqueda[[str_columna]]
+  ser_duplicados_booleans = df_columna.duplicated(keep=False)  # todos los valores duplicados
+  ser_valores_duplicados = df_columna.loc[ser_duplicados_booleans].drop_duplicates(keep='first')[str_columna]  # solo los duplicados
+  df_resultado = df_orig.query(str_columna + ' not in @ser_valores_duplicados')
+  cuenta_eliminados = df_orig.query(str_columna + ' in @ser_valores_duplicados').shape[0]
+  cuenta_original = df.shape[0]
+  pct_eliminado = (1 - (cuenta_original - cuenta_eliminados) / cuenta_original) * 100
+  print(f'Se eliminaron {cuenta_eliminados} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
   return df_resultado
-cuenta_original=df_raw.shape[0]
-df=df_raw
 # NombresRelativos
-df_vars_nombres_relativos = df[['NombreRelativoCorto', 'NombreRelativoLargo']].drop_duplicates()
+df_vars_nombres_relativos = df[['NombreRelativoCorto', 'NombreRelativoLargo']].drop_duplicates(keep='first')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'NombreRelativoCorto')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'NombreRelativoLargo')
-# NombresAbsolutos
-df_vars_nombres_absolutos = df[['NombreAbsolutoCorto', 'NombreAbsolutoLargo']].drop_duplicates()
-df=quita_duplicados(df, df_vars_nombres_absolutos, 'NombreAbsolutoCorto')
-df=quita_duplicados(df, df_vars_nombres_absolutos, 'NombreAbsolutoLargo')
-# Resumen
-cuenta_sin_incongruentes=df.shape[0]
-print(f'Antes {cuenta_original} registros, ahora {cuenta_sin_incongruentes} es decir {(cuenta_original-cuenta_sin_incongruentes)/cuenta_original*100:.1f} % menos')
-
-# 4.3. Reducción de columnas
-# Se eliminan las columnas con nombre 'Absolutas',
-# porque son columnas derivadas de la columna FechaEncuesta y las columnas
-# con nombre 'Relativo' y por tanto no agregan valor para el análisis.
-df = df_raw.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
-df.head()
-
-# Se vuelve a revisar variables incongruentes en NombresRelativos
-# Los registros que se eliminan aquí tienen más de un nombre Absoluto por cada Relativo.
-cuenta_original=df.shape[0]
-df_vars_nombres_relativos = df[['NombreRelativoCorto', 'NombreRelativoLargo']].drop_duplicates()
-df=quita_duplicados(df, df_vars_nombres_relativos, 'NombreRelativoCorto')
-df=quita_duplicados(df, df_vars_nombres_relativos, 'NombreRelativoLargo')
-cuenta_sin_incongruentes=df.shape[0]
-print(f'Antes {cuenta_original} registros, ahora {cuenta_sin_incongruentes} es decir {(cuenta_original-cuenta_sin_incongruentes)/cuenta_original*100:.1f} % menos')
 
 
 xxx aqui voy. revisar si esta abajo todo el codigo del jupyther Avance.jnpy
 
 # 4.4. Valores faltantes
 if df.isnull().sum().sum() > 0: raise Exception('Hay valores faltantes y no se trataron')
+else: print('No existen valores faltantes')
 # No existen valores faltantes
 
 # 4.5. Conversión de tipo de datos
-print('Antes:')
-print(df.dtypes)
+print(f'Antes:\n{df.dtypes}')
 # Convierte la FechaEncuesta a datetime
 df['FechaEncuesta'] = pd.to_datetime(df['FechaEncuesta'], errors='raise')
-print('\nDespués:')
-print(df.dtypes, df.head())
+print(f'Después:\n{df.dtypes}')
 # Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
 df.nunique()
 
 # 4.6. Agregar columnas calculadas
 df['AñoEncuesta'] = df['FechaEncuesta'].dt.year   # Columna con el año
 df['MesEncuesta'] = df['FechaEncuesta'].dt.month  # Columna con el número de mes
-print(df.dtypes, df.head(), df.tail())
+print(df.dtypes)
 
 # 4.7. Simplificar nombres columnas
-print('Antes:\n', df.columns)
+print(f'Antes:\n{df.columns}')
 df=df.rename(columns={
   'FechaEncuesta'      :'Fecha',
   'NombreRelativoCorto':'IdVariable',
@@ -158,7 +144,7 @@ df=df.rename(columns={
   'AñoEncuesta'        :'Año',
   'MesEncuesta'        :'Mes'
 })
-print('\nDespués:\n', df.columns)
+print(f'Después:\n{df.columns}')
 print(df.head())
 
 # 4.8. Orden
@@ -178,26 +164,13 @@ print(df.head())
 # 4.9 Pasar las variables a columnas
 
 # En el dataset real
-uniqvars=df['IdVariable'].unique()
-uniqvars[415]
-
-df_var_problematica:pd.DataFrame=df.query('IdVariable=="limcrec24nivpreocmest"')
-df_var_problematica=df_var_problematica.query('Fecha=="2024-09-01"')
-df_var_problematica.groupby(by=['Fecha', 'Año', 'Mes', 'IdVariable', 'Variable', 'IdAnalista']).count()
-
-
-df.query('Fecha=="2024-09-01" and IdVariable=="limcrec24nivpreocmest"')
-xxx
-
-
-
-########uniqvars=np.delete(uniqvars,415)  # esta variable tiene repetidos, si se incluye aparece error: Index contains duplicate entries, cannot reshape
-df_subset=df.query("IdVariable in @uniqvars")
+idVariable_unicas=df['IdVariable'].unique()
+df_subset=df.query("IdVariable in @idVariable_unicas")
 df_varscols=df_subset.pivot(
   index=['Año', 'Mes', 'Fecha','IdAnalista'],
   columns=['IdVariable', 'Variable'],
   values='Expectativa')
-df_varscols
+df_varscols.head()
 
 
 # **====== PENDIENTE:**
