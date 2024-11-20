@@ -145,6 +145,7 @@ print(metrics.classification_report(y_test,y_preds))
 # precision es metrica sensibilidad - que tanto tu modelo confía en que hizo la clasificación en cierta clase 
 # recall es metrica especificidad
 # f1-score media armonica entre precission y recall
+# https://www.juanbarrios.com/la-matriz-de-confusion-y-sus-metricas/
 
 # precision sensilbilidad a los datos
 # accuracy es la precision del modelo
