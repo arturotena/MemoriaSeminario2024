@@ -159,3 +159,6 @@ from imblearn.metrics import classification_report_imbalanced
 print(classification_report_imbalanced(y_test,y_preds))
 # iba = imbalance acuracy es 0.94 por lo que no importa si estan desbalanceados los casos entrenados del modelo
 
+# otra metrica
+print(metrics.matthews_corrcoef(y_test,y_preds))
+# cercano a 1 es bueno, si fuera 0 es 50%/50%, negativos no sirve el clasificador
