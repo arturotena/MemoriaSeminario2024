@@ -163,3 +163,13 @@ print(classification_report_imbalanced(y_test,y_preds))
 # otra metrica
 print(metrics.matthews_corrcoef(y_test,y_preds))
 # cercano a 1 es bueno, si fuera 0 es 50%/50%, negativos no sirve el clasificador
+
+
+
+# seleccionar variables o variables derivadas para alimentar el modelo
+# para obtener un patron nuevo
+# para que el analisis sea mejor
+
+# adquisicion de datos procesamiento clasificación y evaluacion
+#  y ademas "extracción y selección de características" daria mas peso al trabajo
+
