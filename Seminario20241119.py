@@ -1,3 +1,12 @@
+# R
+# library(reticulate)
+# py_install("pandas")
+# py_install("matplotlib")
+# py_install("scikit-learn")
+# py_install("seaborn")
+# py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
+
+
 import os
 os.chdir('D:/Proyectos/RStudioProyectos')
 import pandas as pd
@@ -145,4 +154,8 @@ print(metrics.classification_report(y_test,y_preds))
 
 # problema de machine learning: support varía mucho por clase dependiendo de cuantos elementos se entrenan y su distribucion
 
-# 
+#  imbalanced_learn # metricas clasificador, genera datos faltantes
+from imblearn.metrics import classification_report_imbalanced
+print(classification_report_imbalanced(y_test,y_preds))
+# iba = imbalance acuracy es 0.94 por lo que no importa si estan desbalanceados los casos entrenados del modelo
+
