@@ -6,7 +6,7 @@
 import os
 
 print(os.getcwd())
-#os.chdir('Downloads/MemoriaSeminario2024')
+os.chdir('Downloads/MemoriaSeminario2024')
 
 # ------------------------------------------------------------------------------
 # 1. Importar bibliotecas
@@ -202,6 +202,7 @@ respuestasPorAño.to_frame().plot.bar(
   figsize=(10, 5),
   color='darkblue')
 plt.show()
+plt.close()
 
 analistasDistintosPorAño = df.groupby(by=["Año"])["IdAnalista"].unique().apply(len)
 analistasDistintosPorAño.name = 'Número de analistas distintos'
@@ -212,6 +213,7 @@ analistasDistintosPorAño.to_frame().plot.bar(
   figsize=(10, 5),
   color ='darkred')
 plt.show()
+plt.close()
 
 analistasDistintosPorAño = df.groupby(by=["Año"])["Variable"].unique().apply(len)
 analistasDistintosPorAño.name = 'Número de preguntas distintas'
@@ -222,21 +224,14 @@ analistasDistintosPorAño.to_frame().plot.bar(
   figsize=(10, 5),
   color ='g')
 plt.show()
+plt.close()
 
 
-# ---
-# 
 # **Por tanto, se concluye que el aumento de respuestas desde 2013 se podría explicar por el aumento de preguntas más que por el aumento de analistas.**
-# 
-# ---
-
 
 
 # ------------------------------------------------------------------------------
 # ## Análisis de la Expectativa de Inflación General Anual
-
-# In[ ]:
-
 
 inflacion_general_anual=df.query('IdVariable=="infgent"')
 inflacion_general_anual = inflacion_general_anual[['Año','Expectativa']] # Crea dataframe con sólo estas dos columnas
@@ -248,6 +243,7 @@ x=inflacion_general_anual.plot.scatter(
   figsize=(10, 5),
   color='purple', alpha=0.2)
 plt.show()
+plt.close()
 #plt.savefig('borrar.png',dpi=300)
 
 # Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
@@ -259,6 +255,7 @@ axes = inflacion_general_anual.boxplot(
   color='purple')
 axes.set_title('Expectativa de Inflación General al cierre del año de la encuesta')
 plt.show()
+plt.close()
 
 
 
@@ -267,7 +264,6 @@ plt.show()
 
 # # Correlaciones
 
-# In[ ]:
 
 
 # Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
@@ -276,17 +272,9 @@ print(f'Son {df_variables_en_columnas.columns.size} variables.')
 df_corrs.sample(4)
 
 
-# In[ ]:
-
-
 f = plt.figure(figsize=(10, 10))
 plt.matshow(df_corrs, f)
 plt.show()
+plt.close()
 print('Son demasiadas variables para una sola gráfica.')
-
-
-# In[ ]:
-
-
-
 
