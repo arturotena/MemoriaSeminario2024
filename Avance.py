@@ -15,6 +15,7 @@ os.chdir('datasets')
 #  print(os.getcwd())
 print(os.getcwd())
 
+
 # ---------------------------------------------------------------------------
 # 1. Importar bibliotecas
 import pandas as pd
@@ -35,6 +36,7 @@ if np.__version__ not in ['2.1.1','2.1.3']:
     raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
 if mpl_version != '3.9.2':
     raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
+
 
 # ----------------------------------------------------------------------------
 # 2. Adquisición de datos
@@ -150,7 +152,7 @@ def quita_duplicados(df_orig, df_busqueda, str_columna):
   cuenta_eliminados = df_orig.query(str_columna + ' in @ser_valores_duplicados').shape[0]
   cuenta_original = df.shape[0]
   pct_eliminado = (1 - (cuenta_original - cuenta_eliminados) / cuenta_original) * 100
-  print(f'Se eliminaron {cuenta_eliminados} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
+  print(f'Se eliminaron {cuenta_eliminados:,} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
   return df_resultado
 # NombresRelativos
 df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
@@ -161,14 +163,14 @@ df=quita_duplicados(df, df_vars_nombres_relativos, 'Variable')
 # 4.5. Conversión de tipo de datos
 print(f'Antes:\n{df.dtypes}')
 # Convierte la FechaEncuesta a datetime
-df['FechaEncuesta'] = pd.to_datetime(df['FechaEncuesta'], errors='raise')
+df['Fecha'] = pd.to_datetime(df['Fecha'], errors='raise')
 print(f'Después:\n{df.dtypes}')
 # Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
 print(f'Valores únicos:\n{df.nunique()}')
 
 # 4.6. Agregar columnas calculadas
-df['AñoEncuesta'] = df['FechaEncuesta'].dt.year   # Columna con el año
-df['MesEncuesta'] = df['FechaEncuesta'].dt.month  # Columna con el número de mes
+df['Año'] = df['Fecha'].dt.year
+df['Mes'] = df['Fecha'].dt.month # número del mes
 print(df.dtypes)
 
 # 4.8. Orden
@@ -209,6 +211,7 @@ print('DataFrame con variables en columnas:' +
 # 8. Análisis de series de tiempo
 # When we analyze time series data, we can typically uncover patterns or trends that repeat over time and present a temporal seasonality. Key components of time series data include trends, seasonal variations, cyclical variations, and irregular variations or noise.}
 # 
+
 
 # --------------------------------------------------------------------------
 # Estadísticas descriptivas
@@ -269,8 +272,6 @@ plt.show()
 plt.close()
 
 
-
-
 # --------------------------------------------------------------------------
 # Correlaciones
 
@@ -284,4 +285,3 @@ plt.matshow(df_corrs, f)
 plt.show()
 plt.close()
 print('Son demasiadas variables para una sola gráfica.')
-
