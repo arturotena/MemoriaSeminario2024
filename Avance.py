@@ -9,20 +9,20 @@ print(os.getcwd())
 os.chdir('GitHub')
 os.chdir('Downloads')
 os.chdir('MemoriaSeminario2024')
+os.chdir('datasets')
 # if not os.getcwd().endswith('MemoriaSeminario2024'):
 #  os.chdir('Downloads/MemoriaSeminario2024')
+#  print(os.getcwd())
 print(os.getcwd())
 
-# ------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # 1. Importar bibliotecas
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-pd.set_option('display.max_columns', 200)
-pd.set_option('display.width', 130)
-
-
+#pd.set_option('display.max_columns', 200)
+#pd.set_option('display.width', 130)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
 from matplotlib import __version__ as mpl_version
@@ -30,13 +30,13 @@ print(f'Pandas: {pd.__version__}.')
 print(f'Numpy: {np.__version__}.')
 print(f'Matplotlib: {mpl_version}.')
 if pd.__version__ not in ['2.2.2','2.2.3']:
-  raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
+    raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
 if np.__version__ not in ['2.1.1','2.1.3']:
-  raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
+    raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
 if mpl_version != '3.9.2':
-  raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
+    raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # 2. Adquisición de datos
 
 # Path de datasets locales
@@ -49,12 +49,11 @@ df_exp2 = pd.read_csv(Microdatos_1999_01_csv_path, encoding='latin-1')
 df = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque no son relevantes
 
 
-# ------------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # 3. Inspección inicial
 
 # Obtener información general sobre los datos, tal como la cantidad de filas y
-# columnas, los valores de los datos, los tipos de datos y los valores faltantes
-# en el conjunto de datos.
+# columnas, los valores de los datos, y los tipos de datos.
 
 # Dimensiones de los datos
 rows, cols = df.shape
@@ -79,23 +78,49 @@ print(df.dtypes)
 # Sólo 2 se detectan como numéricas
 
 
-# ------------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # 4. Preparación de los datos
 
+# 4.0. Limpieza de los datos: búsqueda de duplicados.
+s_duplicados=df.duplicated(keep=False)
+if s_duplicados[s_duplicados==True].size > 0:
+    raise Exception('Hay renglones duplicados y no se trataron')
+else:
+    print('No existen renglones duplicados')
+
 # 4.1. Reducción de columnas
-# Se eliminan las columnas con nombre 'Absolutas',
-# porque son columnas derivadas de la columna FechaEncuesta y las columnas
-# con nombre 'Relativo' y, por tanto, no agregan valor para el análisis.
-df = df.drop(['IdVariable', 'Variable'], axis = 1)
+# Se eliminan las columnas con nombre 'Absolutas', porque son columnas derivadas
+# de la columna FechaEncuesta y las columnas con nombre 'Relativo' y, por tanto,
+# no agregan valor para el análisis.
+df = df.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
 print(df.dtypes)
 
-# 4.2. Busca duplicados sin contar la columna Dato
-# Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
-xxxx
-df.columns
+# 4.7. Simplificar nombres columnas
+print(f'Antes:\n{df.columns}')
+df=df.rename(columns={
+    'FechaEncuesta'      :'Fecha',
+    'NombreRelativoCorto':'IdVariable',
+    'NombreRelativoLargo':'Variable',
+    'IdAnalista'         :'IdAnalista',
+    'Dato'               :'Expectativa',
+    'AñoEncuesta'        :'Año',
+    'MesEncuesta'        :'Mes'
+})
+print(f'Después:\n{df.columns}')
+print(df.head())
 
-s_duplicados=df[['Fecha', 'IdVariable', 'Variable',
-  'IdAnalista']].duplicated(keep=False)
+# 4.2. Valores faltantes
+if df.isnull().sum().sum() > 0:
+    raise Exception('Hay valores faltantes y no se trataron')
+else:
+    print('No existen valores faltantes')
+
+# 4.3. Limpieza de los datos: busca duplicados sin contar la columna Dato:
+# sólo debería haber un dato de expectativa para cada fecha, variable, analista.
+s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']
+               ].duplicated(keep=False)
+               
+               
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,} registros duplicados, con la(s) variable(s):\n',
       df[s_duplicados][['IdVariable', 'Variable']].drop_duplicates(keep='first'))
 cuenta_original=df.shape[0]
@@ -105,10 +130,12 @@ cuenta_sin_dups=df.shape[0]
 print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,} registros; ' +
       f'es decir {(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
 
-# 4.3. Busca incongruencias en variables
-# Un NombreCorto debe tener un solo NombreLargo y viceversa
-# (deben estar pareados los nombres relativos;
-# es decir, los valores deben tener una relación biunívoca.)
+# 4.4. Limpieza de los datos: Busca incongruencias en variables
+
+# Un NombreCorto debe tener un solo NombreLargo y viceversa.
+#
+# Deben estar pareados los nombres relativos; es decir,
+# los valores deben tener una relación biunívoca.
 #
 # No se busca incongruencias de variable por fecha, sino en el DataFrame completo,
 # por lo que pueden quedar eliminados registros con variables
@@ -132,15 +159,6 @@ df=quita_duplicados(df, df_vars_nombres_relativos, 'IdVariable')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'Variable')
 
 
-xxx aqui voy. revisar si esta abajo todo el codigo del jupyther Avance.jnpy
-
-# 4.4. Valores faltantes
-if df.isnull().sum().sum() > 0:
-  raise Exception('Hay valores faltantes y no se trataron')
-else:
-  print('No existen valores faltantes')
-# No existen valores faltantes
-
 # 4.5. Conversión de tipo de datos
 print(f'Antes:\n{df.dtypes}')
 # Convierte la FechaEncuesta a datetime
@@ -153,20 +171,6 @@ print(f'Valores únicos:\n{df.nunique()}')
 df['AñoEncuesta'] = df['FechaEncuesta'].dt.year   # Columna con el año
 df['MesEncuesta'] = df['FechaEncuesta'].dt.month  # Columna con el número de mes
 print(df.dtypes)
-
-# 4.7. Simplificar nombres columnas
-print(f'Antes:\n{df.columns}')
-df=df.rename(columns={
-  'FechaEncuesta'      :'Fecha',
-  'NombreRelativoCorto':'IdVariable',
-  'NombreRelativoLargo':'Variable',
-  'IdAnalista'         :'IdAnalista',
-  'Dato'               :'Expectativa',
-  'AñoEncuesta'        :'Año',
-  'MesEncuesta'        :'Mes'
-})
-print(f'Después:\n{df.columns}')
-print(df.head())
 
 # 4.8. Orden
 # Renglones: ordenar por fecha, variable, analista.
@@ -183,15 +187,13 @@ print(df.columns)
 print(df.head())
 
 # 4.9 Pasar las variables a columnas
-
-# En el dataset real
 idVariable_unicas=df['IdVariable'].unique()
 df_subset=df.query("IdVariable in @idVariable_unicas")
 df_variables_en_columnas=df_subset.pivot(
-  index=['Año', 'Mes', 'Fecha','IdAnalista'],
-  columns=['IdVariable'], #, 'Variable'],
-  values='Expectativa')
-df_variables_en_columnas.describe().T.sampl{e(15)
+    index=['Año', 'Mes', 'Fecha','IdAnalista'],
+    columns=['IdVariable'], #, 'Variable'],
+    values='Expectativa')
+df_variables_en_columnas.describe().T.sample(15)
 print('DataFrame con variables en columnas:' +
       f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
       f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
@@ -209,72 +211,60 @@ print('DataFrame con variables en columnas:' +
 # When we analyze time series data, we can typically uncover patterns or trends that repeat over time and present a temporal seasonality. Key components of time series data include trends, seasonal variations, cyclical variations, and irregular variations or noise.}
 # 
 
-# # Estadísticas descriptivas
+# --------------------------------------------------------------------------
+# Estadísticas descriptivas
 
-# ## Análisis de número de respuestas
-
-# In[ ]:
-
-
+# Análisis de número de respuestas
 respuestasPorAño = df.groupby(by=["Año"])["Expectativa"].count()
 respuestasPorAño.name = 'Número de respuestas por año'
 respuestasPorAño.index.name = 'Año de la Enuesta'
 respuestasPorAño.to_frame().plot.bar(
-  title='Número de respuestas por año de la Encuesta (2024 año en curso)',
-  rot=70,
-  figsize=(10, 5),
-  color='darkblue')
+    title='Número de respuestas por año de la Encuesta (2024 año en curso)',
+    rot=70,
+    figsize=(10, 5),
+    color='darkblue')
 plt.show()
 plt.close()
-
 analistasDistintosPorAño = df.groupby(by=["Año"])["IdAnalista"].unique().apply(len)
 analistasDistintosPorAño.name = 'Número de analistas distintos'
 analistasDistintosPorAño.index.name = 'Año de la Enuesta'
 analistasDistintosPorAño.to_frame().plot.bar(
-  title='Número de analistas distintos por año de la Encuesta (2024 año en curso)',
-  rot=70,
-  figsize=(10, 5),
-  color ='darkred')
+    title='Número de analistas distintos por año de la Encuesta (2024 año en curso)',
+    rot=70,
+    figsize=(10, 5),
+    color ='darkred')
 plt.show()
 plt.close()
-
 analistasDistintosPorAño = df.groupby(by=["Año"])["Variable"].unique().apply(len)
 analistasDistintosPorAño.name = 'Número de preguntas distintas'
 analistasDistintosPorAño.index.name = 'Año de la Enuesta'
 analistasDistintosPorAño.to_frame().plot.bar(
-  title='Número de preguntas por año de la Encuesta (2024 año en curso)',
-  rot=70,
-  figsize=(10, 5),
-  color ='g')
+    title='Número de preguntas por año de la Encuesta (2024 año en curso)',
+    rot=70,
+    figsize=(10, 5),
+    color ='g')
 plt.show()
 plt.close()
-
-
 # **Por tanto, se concluye que el aumento de respuestas desde 2013 se podría explicar por el aumento de preguntas más que por el aumento de analistas.**
 
-
-# ------------------------------------------------------------------------------
-# ## Análisis de la Expectativa de Inflación General Anual
-
+# Análisis de la Expectativa de Inflación General Anual
 inflacion_general_anual=df.query('IdVariable=="infgent"')
 inflacion_general_anual = inflacion_general_anual[['Año','Expectativa']] # Crea dataframe con sólo estas dos columnas
 print(inflacion_general_anual)
-
 x=inflacion_general_anual.plot.scatter(
-  x='Año', y='Expectativa',
-  rot=70,
-  figsize=(10, 5),
-  color='purple', alpha=0.2)
+    x='Año', y='Expectativa',
+    rot=70,
+    figsize=(10, 5),
+    color='purple', alpha=0.2)
 plt.show()
 plt.close()
-
 # Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
 axes = inflacion_general_anual.boxplot(
-  column='Expectativa', by='Año',
-  ylabel='Porcentaje', xlabel='Año de la encuesta',
-  rot=70,
-  figsize=(10, 5),
-  color='purple')
+    column='Expectativa', by='Año',
+    ylabel='Porcentaje', xlabel='Año de la encuesta',
+    rot=70,
+    figsize=(10, 5),
+    color='purple')
 axes.set_title('Expectativa de Inflación General al cierre del año de la encuesta')
 plt.show()
 plt.close()
@@ -282,17 +272,13 @@ plt.close()
 
 
 
-
-
-# # Correlaciones
-
-
+# --------------------------------------------------------------------------
+# Correlaciones
 
 # Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
 df_corrs=df_variables_en_columnas.corr()
 print(f'Son {df_variables_en_columnas.columns.size} variables.')
 df_corrs.sample(4)
-
 
 f = plt.figure(figsize=(10, 10))
 plt.matshow(df_corrs, f)
