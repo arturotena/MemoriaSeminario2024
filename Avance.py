@@ -6,7 +6,9 @@
 import os
 
 print(os.getcwd())
-os.chdir('Downloads/MemoriaSeminario2024')
+if not os.getcwd().endswith('MemoriaSeminario2024'):
+  os.chdir('Downloads/MemoriaSeminario2024')
+  print(os.getcwd())
 
 # ------------------------------------------------------------------------------
 # 1. Importar bibliotecas
