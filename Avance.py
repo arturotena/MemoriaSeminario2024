@@ -120,7 +120,6 @@ else:
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']
                ].duplicated(keep=False)
                
-               
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,} registros duplicados, con la(s) variable(s):\n',
       df[s_duplicados][['IdVariable', 'Variable']].drop_duplicates(keep='first'))
 cuenta_original=df.shape[0]
