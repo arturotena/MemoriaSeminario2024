@@ -6,7 +6,10 @@
 import os
 
 print(os.getcwd())
-os.chdir('Downloads/MemoriaSeminario2024')
+os.chdir('GitHub')
+os.chdir('Downloads')
+os.chdir('MemoriaSeminario2024')
+print(os.getcwd())
 
 # ------------------------------------------------------------------------------
 # 1. Importar bibliotecas
@@ -17,11 +20,19 @@ import matplotlib.pyplot as plt
 pd.set_option('display.max_columns', 200)
 pd.set_option('display.width', 130)
 
+
+
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
-if pd.__version__ != '2.2.2': raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
-if np.__version__ != '2.1.1': raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
 from matplotlib import __version__ as mpl_version
-if mpl_version != '3.9.2': raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
+print(f'Pandas: {pd.__version__}.')
+print(f'Numpy: {np.__version__}.')
+print(f'Matplotlib: {mpl_version}.')
+if pd.__version__ not in ['2.2.2','2.2.3']:
+  raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
+if np.__version__ not in ['2.1.1','2.1.3']:
+  raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
+if mpl_version != '3.9.2':
+  raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
 
 # ------------------------------------------------------------------------------
 # 2. Adquisición de datos
@@ -45,22 +56,23 @@ df = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque no 
 
 # Dimensiones de los datos
 rows, cols = df.shape
+print(f'Hay {cols} columnas y {rows:,} registros.')
 if cols != 7: raise Exception(f"Se detectaron menos columnas que antes.")
 if rows <= 1500000: raise Exception(f"Se detectaron menos registros que antes.")
 if rows > 1600000: raise Exception(f"Se detectaron más registros que antes.")
-print(f'Hay 7 columnas y poco mas de un millón y medio de registros ({rows})')
 
-# Visualización de los primeros y últimos 3 renglones, y 10 aleatorios.
+print('Visualización de los primeros y últimos 3 renglones, y 10 aleatorios:')
 print(df.head(3))
 print(df.tail(3))
 print(df.sample(10))
 
+print('Visualización de las columnas:')
 print(df.columns)
 # Las columnas son: 'FechaEncuesta', 'NombreAbsolutoCorto',
 # 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo',
 # 'IdAnalista', 'Dato'
 
-# Tipos de las columnas
+print('Visualización de los tipos de dato de las columnas:')
 print(df.dtypes)
 # Sólo 2 se detectan como numéricas
 
@@ -72,20 +84,24 @@ print(df.dtypes)
 # Se eliminan las columnas con nombre 'Absolutas',
 # porque son columnas derivadas de la columna FechaEncuesta y las columnas
 # con nombre 'Relativo' y, por tanto, no agregan valor para el análisis.
-df = df.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
-df.head()
+df = df.drop(['IdVariable', 'Variable'], axis = 1)
+print(df.dtypes)
 
 # 4.2. Busca duplicados sin contar la columna Dato
 # Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
-s_duplicados=df[['FechaEncuesta', 'NombreRelativoCorto', 'NombreRelativoLargo', 'IdAnalista'
-                 ]].duplicated(keep=False)
-print('Existen:', s_duplicados[s_duplicados==True].size, 'registros duplicados, con la(s) variable(s):\n',
-      df[s_duplicados][['NombreRelativoCorto', 'NombreRelativoLargo']].drop_duplicates(keep='first'))
+xxxx
+df.columns
+
+s_duplicados=df[['Fecha', 'IdVariable', 'Variable',
+  'IdAnalista']].duplicated(keep=False)
+print(f'Existen: {s_duplicados[s_duplicados==True].size:,} registros duplicados, con la(s) variable(s):\n',
+      df[s_duplicados][['IdVariable', 'Variable']].drop_duplicates(keep='first'))
 cuenta_original=df.shape[0]
-df=df.drop_duplicates(subset=['FechaEncuesta', 'NombreRelativoCorto', 'NombreRelativoLargo', 'IdAnalista'],
-                       keep=False)
+df=df.drop_duplicates(subset=['Fecha', 'IdVariable',
+                      'Variable', 'IdAnalista'], keep=False)
 cuenta_sin_dups=df.shape[0]
-print(f'Antes {cuenta_original} registros, ahora {cuenta_sin_dups} es decir {(cuenta_original - cuenta_sin_dups) / cuenta_original * 100:.1f} % menos')
+print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,} registros; ' +
+      f'es decir {(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
 
 # 4.3. Busca incongruencias en variables
 # Un NombreCorto debe tener un solo NombreLargo y viceversa
@@ -109,16 +125,18 @@ def quita_duplicados(df_orig, df_busqueda, str_columna):
   print(f'Se eliminaron {cuenta_eliminados} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
   return df_resultado
 # NombresRelativos
-df_vars_nombres_relativos = df[['NombreRelativoCorto', 'NombreRelativoLargo']].drop_duplicates(keep='first')
-df=quita_duplicados(df, df_vars_nombres_relativos, 'NombreRelativoCorto')
-df=quita_duplicados(df, df_vars_nombres_relativos, 'NombreRelativoLargo')
+df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
+df=quita_duplicados(df, df_vars_nombres_relativos, 'IdVariable')
+df=quita_duplicados(df, df_vars_nombres_relativos, 'Variable')
 
 
 xxx aqui voy. revisar si esta abajo todo el codigo del jupyther Avance.jnpy
 
 # 4.4. Valores faltantes
-if df.isnull().sum().sum() > 0: raise Exception('Hay valores faltantes y no se trataron')
-else: print('No existen valores faltantes')
+if df.isnull().sum().sum() > 0:
+  raise Exception('Hay valores faltantes y no se trataron')
+else:
+  print('No existen valores faltantes')
 # No existen valores faltantes
 
 # 4.5. Conversión de tipo de datos
@@ -127,7 +145,7 @@ print(f'Antes:\n{df.dtypes}')
 df['FechaEncuesta'] = pd.to_datetime(df['FechaEncuesta'], errors='raise')
 print(f'Después:\n{df.dtypes}')
 # Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
-df.nunique()
+print(f'Valores únicos:\n{df.nunique()}')
 
 # 4.6. Agregar columnas calculadas
 df['AñoEncuesta'] = df['FechaEncuesta'].dt.year   # Columna con el año
@@ -171,8 +189,11 @@ df_variables_en_columnas=df_subset.pivot(
   index=['Año', 'Mes', 'Fecha','IdAnalista'],
   columns=['IdVariable'], #, 'Variable'],
   values='Expectativa')
-df_variables_en_columnas.head()
-df_variables_en_columnas.describe()
+df_variables_en_columnas.describe().T.sampl{e(15)
+print('DataFrame con variables en columnas:' +
+      f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
+      f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
+
 
 # **====== PENDIENTE:**
 # 
@@ -244,7 +265,6 @@ x=inflacion_general_anual.plot.scatter(
   color='purple', alpha=0.2)
 plt.show()
 plt.close()
-#plt.savefig('borrar.png',dpi=300)
 
 # Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
 axes = inflacion_general_anual.boxplot(
