@@ -1,3 +1,13 @@
+# R
+# library(reticulate)
+# py_install("pandas")
+# py_install("matplotlib")
+# py_install("scikit-learn")
+# py_install("seaborn")
+# py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
+
+
+
 # Regresores basados en funciones probabilisticas
 # (funciones gausianas)
 
