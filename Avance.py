@@ -4,12 +4,12 @@
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
 import os
-f
+
 print(os.getcwd())
-#os.chdir('GitHub')
-#os.chdir('Downloads')
-#os.chdir('MemoriaSeminario2024')
-#os.chdir('datasets')
+os.chdir('Downloads')
+os.chdir('GitHub')
+os.chdir('MemoriaSeminario2024')
+os.chdir('datasets')
 # if not os.getcwd().endswith('MemoriaSeminario2024'):
 #  os.chdir('Downloads/MemoriaSeminario2024')
 #  print(os.getcwd())
@@ -79,25 +79,28 @@ print('Visualización de los tipos de dato de las columnas:')
 print(df.dtypes)
 # Sólo 2 se detectan como numéricas
 
+print('Visualización de estadísticas descriptivas de las columnas numéricas:')
+df.describe()
+# Existe el IdAnalista con valor a cero.
 
 # --------------------------------------------------------------------------
 # 4. Preparación de los datos
 
-# 4.0. Limpieza de los datos: búsqueda de duplicados.
+# 4.1. Limpieza de los datos: búsqueda de duplicados.
 s_duplicados=df.duplicated(keep=False)
 if s_duplicados[s_duplicados==True].size > 0:
     raise Exception('Hay renglones duplicados y no se trataron')
 else:
     print('No existen renglones duplicados')
 
-# 4.1. Reducción de columnas
+# 4.2. Reducción de columnas
 # Se eliminan las columnas con nombre 'Absolutas', porque son columnas derivadas
 # de la columna FechaEncuesta y las columnas con nombre 'Relativo' y, por tanto,
 # no agregan valor para el análisis.
 df = df.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
 print(df.dtypes)
 
-# 4.7. Simplificar nombres columnas
+# 4.3. Simplificar nombres columnas
 print(f'Antes:\n{df.columns}')
 df=df.rename(columns={
     'FechaEncuesta'      :'Fecha',
@@ -111,13 +114,13 @@ df=df.rename(columns={
 print(f'Después:\n{df.columns}')
 print(df.head())
 
-# 4.2. Valores faltantes
+# 4.4. Valores faltantes
 if df.isnull().sum().sum() > 0:
     raise Exception('Hay valores faltantes y no se trataron')
 else:
     print('No existen valores faltantes')
 
-# 4.3. Limpieza de los datos: busca duplicados sin contar la columna Dato:
+# 4.5. Limpieza de los datos: busca duplicados sin contar la columna Dato:
 # sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']
                ].duplicated(keep=False)
@@ -131,7 +134,7 @@ cuenta_sin_dups=df.shape[0]
 print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,} registros; ' +
       f'es decir {(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
 
-# 4.4. Limpieza de los datos: Busca incongruencias en variables
+# 4.6. Limpieza de los datos: Busca incongruencias en variables
 
 # Un NombreCorto debe tener un solo NombreLargo y viceversa.
 #
@@ -159,7 +162,6 @@ df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep=
 df=quita_duplicados(df, df_vars_nombres_relativos, 'IdVariable')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'Variable')
 
-
 # 4.5. Conversión de tipo de datos
 print(f'Antes:\n{df.dtypes}')
 # Convierte la FechaEncuesta a datetime
@@ -173,7 +175,7 @@ df['Año'] = df['Fecha'].dt.year
 df['Mes'] = df['Fecha'].dt.month # número del mes
 print(df.dtypes)
 
-# 4.8. Orden
+# 4.7. Orden
 # Renglones: ordenar por fecha, variable, analista.
 print('Antes:\n',df['Año'].unique())
 df=df.sort_values(by=['Año','Mes', 'Variable', 'IdAnalista'])
@@ -186,6 +188,19 @@ df = df.reindex(columns=['Fecha','Año', 'Mes','IdVariable','Variable','IdAnalis
 print('\nDespués:')
 print(df.columns)
 print(df.head())
+
+# 4.6. Limpieza de los datos: Busca incongruencias en IdAnalista
+df.columns
+df.describe()
+# Existe el IdAnalista con valor a cero.
+print('A pesar que existen múltiples registros por año:')
+df[['Año','Expectativa']].groupby('Año').count()
+print('Solo en algunos años se tiene el IdAnalista cero...')
+df.query('IdAnalista==0').groupby('Año').count()
+print('...de 1999 al 2008.')
+# Hipótesis: el IdAnalista con valor a cero es un placeholder para valores que no se tienen el desagregado por analista.
+XXX
+
 
 # 4.9 Pasar las variables a columnas
 idVariable_unicas=df['IdVariable'].unique()
