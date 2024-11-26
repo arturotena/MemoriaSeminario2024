@@ -209,11 +209,8 @@ df_participa_analista0[['Fecha','IdVariable','IdAnalista']].groupby(['IdAnalista
 print('Se observa que en estas fechas y variables sólo participó el analista 113.')
 # No se pudo probar la hipótesis nula.
 # Por lo tanto, el analista 0 puede ser un placeholder.
-# Se procede a eliminar las (fecha,variable) donde tiene respuest el analista 0.
-xxx
-df_participa_analista0
-
-
+# Se procede a eliminar las (fecha,variable) donde tiene respuesta el analista 0.
+df=df.query('IdAnalista != 0')
 
 # 4.9 Pasar las variables a columnas
 idVariable_unicas=df['IdVariable'].unique()
