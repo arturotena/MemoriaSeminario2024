@@ -4,12 +4,12 @@
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
 import os
-
+f
 print(os.getcwd())
-os.chdir('GitHub')
-os.chdir('Downloads')
-os.chdir('MemoriaSeminario2024')
-os.chdir('datasets')
+#os.chdir('GitHub')
+#os.chdir('Downloads')
+#os.chdir('MemoriaSeminario2024')
+#os.chdir('datasets')
 # if not os.getcwd().endswith('MemoriaSeminario2024'):
 #  os.chdir('Downloads/MemoriaSeminario2024')
 #  print(os.getcwd())
