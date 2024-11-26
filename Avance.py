@@ -189,17 +189,30 @@ print('\nDespués:')
 print(df.columns)
 print(df.head())
 
-# 4.6. Limpieza de los datos: Busca incongruencias en IdAnalista
-df.columns
-df.describe()
-# Existe el IdAnalista con valor a cero.
+# 4.6. Limpieza de los datos: analista 0
+print('Se observa que existe el IdAnalista con valor a cero:')
+df[['IdAnalista']].describe()
 print('A pesar que existen múltiples registros por año:')
 df[['Año','Expectativa']].groupby('Año').count()
 print('Solo en algunos años se tiene el IdAnalista cero...')
 df.query('IdAnalista==0').groupby('Año').count()
 print('...de 1999 al 2008.')
 # Hipótesis: el IdAnalista con valor a cero es un placeholder para valores que no se tienen el desagregado por analista.
-XXX
+# Hipótesis alternativa: sólo el analista 0 tiene respuesta en algunas (fecha,variable).
+# Hipótesis nula: más de un analista tiene respuesta en las (fecha,variable) en las que el analista 0 tiene respuesta.
+df_fecha_variable_participa_analista0=df.query('IdAnalista==0')[['Fecha','IdVariable']]
+print(df_fecha_variable_participa_analista0)
+print(f'En {df_fecha_variable_participa_analista0.shape[0]} variables de distintas fechas participa el analista 0')
+# Analizando todos las fechas variable donde participa el analista 0:
+df_participa_analista0=pd.merge(df,df_fecha_variable_participa_analista0,how='inner', on=['Fecha','IdVariable'])
+df_participa_analista0[['Fecha','IdVariable','IdAnalista']].groupby(['IdAnalista']).count()
+print('Se observa que en estas fechas y variables sólo participó el analista 113.')
+# No se pudo probar la hipótesis nula.
+# Por lo tanto, el analista 0 puede ser un placeholder.
+# Se procede a eliminar las (fecha,variable) donde tiene respuest el analista 0.
+xxx
+df_participa_analista0
+
 
 
 # 4.9 Pasar las variables a columnas
