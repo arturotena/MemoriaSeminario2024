@@ -205,32 +205,76 @@ print('DataFrame con variables en columnas:' +
 df_variables_en_columnas.describe().T.sample(15)
 
 # 4.7. Agrupación de variables
-# Agrupar por tema las variables de los distintos horizontes.
-df_variables=df[['IdVariable','Variable']].drop_duplicates()
-df_variables.sort_values(by=['Variable'])
-print(df_variables)
-df_variables['Variable_5'] = df_variables['Variable'].str[:5]
-df_variables['Variable_10'] = df_variables['Variable'].str[:10]
-df_variables['Variable_15'] = df_variables['Variable'].str[:15]
-list(df_variables['Variable_5'].drop_duplicates().sort_values())
-list(df_variables['Variable_10'].drop_duplicates().sort_values())
-list(df_variables['Variable_15'].drop_duplicates().sort_values())
-
-def primera_palabra(s):
-  return s.split(' ')[0]
-def primeras_dos_palabras(s):
-  palabras = s.split(' ')
-  return palabras[0] + ' ' + palabras[1]
-
-primera_palabra('')
-primera_palabra('ab')
-primera_palabra('ab cd')
-primera_palabra('ab cd def')
-
-df_variables['Variable'].apply(primera_palabra)
 xxx
+# Agrupar por tema las variables de los distintos horizontes.
+df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
+def tres_letras(s):
+    return s[:3]
+def primeras_dos_palabras(s):
+    palabras = s.split(' ')
+    return ' '.join(s.split(' ')[:2])
+df_variables['TresLetras']=df_variables['Variable'].apply(tres_letras)
+df_variables['DosPalabras']=df_variables['Variable'].apply(primeras_dos_palabras)
+df_variables['Tema']=''
+print(df_variables.columns)
 
-# **====== PENDIENTE:**
+#    """Regresa el tema que aplica al renglón."""
+def tema(dos_palabras, tema, renglon, tres_letras):
+    if renglon['TresLetras'] == tres_letras:
+        if renglon['DosPalabras'] == dos_palabras:
+            return tema
+    return renglon['Tema']
+def aplica_tema(df_variables, dos_palabras, tema, tres_letras):
+    lm=lambda renglon: tema(dos_palabras,tema,renglon,tres_letras)
+    #df_variables['Tema']=
+    df_variables.apply(lm, axis=1)
+
+
+tres_letras=df_variables.query('Tema==""').head(1)['TresLetras'].values[0]
+print(df_variables.query('TresLetras==@tres_letras')[['Variable','DosPalabras']])
+df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balanza Comercial,','Balanza Comercial',renglon,tres_letras), axis=1)
+df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balance económico,','Balance económico del sector público',renglon,tres_letras), axis=1)
+#aplica_tema(df_variables, 'Balanza Comercial,', 'Balanza Comercial', tres_letras)
+
+df_variables.query('Tema!=""')
+
+xxx
+dict_temas={ } # TresLetras, DosPalabras = Tema
+dict_temas['Bal'] = {}
+dict_temas['Bal']['Balanza Comercial,']='Balanza Comercial'
+dict_temas['Bal']['Balance económico']='Balance económico del sector público'
+print(dict_temas)
+
+print(df_variables.head(1).T)
+df_variables.query('TresLetras=="Bal" and DosPalabras=="Balanza Comercial,"')["Tema"] = 'Balanza Comercial'
+print(df_variables.head(1).T)
+
+
+
+
+xxx
+def normalise_row(row):
+    v3=row['VariableLetras3']
+    print(v3)
+    #print('%%%%'+dict_temas[v3]+'%%%%')
+#    if row['Currency'] == '$'
+#    return result
+#df['Normalized'] = 
+df.head(1).apply(lambda row : normalise_row(row), axis=1) 
+
+
+ser_VariableLetras3.shape # 20
+ser_VariableLetras3.values[0] # 'Bal'
+df_variables.query('VariableLetras3 == "Bal"')['VariablePalabra2'].shape # 7
+df_variables.query('VariableLetras3 == "Bal"')[['VariablePalabra2', 'Variable']] # Balanza Comercial, Balance económico del sector público 
+df_variables.query('VariablePalabra2 == "Balanza Comercial,"')[['VariablePalabra2', 'Variable']]
+df_variables.query('VariablePalabra2 == "Balanza Comercial,"')[['VariablePalabra2', 'Variable']]
+
+
+#### df=df.merge(df_variables, how='left', on=['IdVariable','Variable'])
+
+
+# **====== PENDIENTE:**
 # 
 # Convertir variables categóricas (si/no; mucho/poco/nada).
 # 
