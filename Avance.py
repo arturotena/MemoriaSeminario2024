@@ -83,6 +83,7 @@ print('Visualización de estadísticas descriptivas de las columnas numéricas:'
 df.describe()
 # Existe el IdAnalista con valor a cero.
 
+
 # --------------------------------------------------------------------------
 # 4. Preparación de los datos
 
@@ -100,7 +101,20 @@ else:
 df = df.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
 print(df.dtypes)
 
-# 4.3. Simplificar nombres columnas
+# 4.3. Conversión de tipo de datos
+print(f'Antes:\n{df.dtypes}')
+# Convierte la FechaEncuesta a datetime
+df['FechaEncuesta'] = pd.to_datetime(df['FechaEncuesta'], errors='raise')
+print(f'Después:\n{df.dtypes}')
+# Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
+print(f'Valores únicos:\n{df.nunique()}')
+
+# 4.4. Agregar columnas calculadas
+df['Año'] = df['FechaEncuesta'].dt.year
+df['Mes'] = df['FechaEncuesta'].dt.month # número del mes
+print(df.dtypes)
+
+# 4.5. Simplificar nombres columnas
 print(f'Antes:\n{df.columns}')
 df=df.rename(columns={
     'FechaEncuesta'      :'Fecha',
@@ -114,27 +128,30 @@ df=df.rename(columns={
 print(f'Después:\n{df.columns}')
 print(df.head())
 
-# 4.4. Valores faltantes
+# 4.5. Valores faltantes
 if df.isnull().sum().sum() > 0:
     raise Exception('Hay valores faltantes y no se trataron')
 else:
     print('No existen valores faltantes')
 
-# 4.5. Limpieza de los datos: busca duplicados sin contar la columna Dato:
+# 4.6. Limpieza de los datos: busca duplicados sin contar la columna Dato:
 # sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']
                ].duplicated(keep=False)
-               
-print(f'Existen: {s_duplicados[s_duplicados==True].size:,} registros duplicados, con la(s) variable(s):\n',
-      df[s_duplicados][['IdVariable', 'Variable']].drop_duplicates(keep='first'))
+
+print(f'Existen: {s_duplicados[s_duplicados==True].size:,}'
+      f' registros duplicados, con la(s) variable(s):\n',
+      df[s_duplicados][['IdVariable', 'Variable']
+      ].drop_duplicates(keep='first'))
 cuenta_original=df.shape[0]
 df=df.drop_duplicates(subset=['Fecha', 'IdVariable',
                       'Variable', 'IdAnalista'], keep=False)
 cuenta_sin_dups=df.shape[0]
-print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,} registros; ' +
-      f'es decir {(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
+print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,}' +
+      f' registros; es decir '
+      f'{(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
 
-# 4.6. Limpieza de los datos: Busca incongruencias en variables
+# 4.7. Limpieza de los datos: Busca incongruencias en variables
 # Un NombreCorto debe tener un solo NombreLargo y viceversa.
 #
 # Deben estar pareados los nombres relativos; es decir,
@@ -161,20 +178,7 @@ df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep=
 df=quita_duplicados(df, df_vars_nombres_relativos, 'IdVariable')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'Variable')
 
-# 4.5. Conversión de tipo de datos
-print(f'Antes:\n{df.dtypes}')
-# Convierte la FechaEncuesta a datetime
-df['Fecha'] = pd.to_datetime(df['Fecha'], errors='raise')
-print(f'Después:\n{df.dtypes}')
-# Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
-print(f'Valores únicos:\n{df.nunique()}')
-
-# 4.6. Agregar columnas calculadas
-df['Año'] = df['Fecha'].dt.year
-df['Mes'] = df['Fecha'].dt.month # número del mes
-print(df.dtypes)
-
-# 4.7. Orden
+# 4.8. Orden
 # Renglones: ordenar por fecha, variable, analista.
 print('Antes:\n',df['Año'].unique())
 df=df.sort_values(by=['Año','Mes', 'Variable', 'IdAnalista'])
@@ -188,18 +192,43 @@ print('\nDespués:')
 print(df.columns)
 print(df.head())
 
-# 4.8 Pasar las variables a columnas
+# 4.9 Pasar las variables a columnas
 idVariable_unicas=df['IdVariable'].unique()
 df_subset=df.query("IdVariable in @idVariable_unicas")
 df_variables_en_columnas=df_subset.pivot(
     index=['Año', 'Mes', 'Fecha','IdAnalista'],
     columns=['IdVariable'], #, 'Variable'],
     values='Expectativa')
-df_variables_en_columnas.describe().T.sample(15)
 print('DataFrame con variables en columnas:' +
       f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
       f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
+df_variables_en_columnas.describe().T.sample(15)
 
+# 4.7. Agrupación de variables
+# Agrupar por tema las variables de los distintos horizontes.
+df_variables=df[['IdVariable','Variable']].drop_duplicates()
+df_variables.sort_values(by=['Variable'])
+print(df_variables)
+df_variables['Variable_5'] = df_variables['Variable'].str[:5]
+df_variables['Variable_10'] = df_variables['Variable'].str[:10]
+df_variables['Variable_15'] = df_variables['Variable'].str[:15]
+list(df_variables['Variable_5'].drop_duplicates().sort_values())
+list(df_variables['Variable_10'].drop_duplicates().sort_values())
+list(df_variables['Variable_15'].drop_duplicates().sort_values())
+
+def primera_palabra(s):
+  return s.split(' ')[0]
+def primeras_dos_palabras(s):
+  palabras = s.split(' ')
+  return palabras[0] + ' ' + palabras[1]
+
+primera_palabra('')
+primera_palabra('ab')
+primera_palabra('ab cd')
+primera_palabra('ab cd def')
+
+df_variables['Variable'].apply(primera_palabra)
+xxx
 
 # **====== PENDIENTE:**
 # 
