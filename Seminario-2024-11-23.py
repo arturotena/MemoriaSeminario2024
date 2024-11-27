@@ -5,6 +5,9 @@
 # py_install("scikit-learn")
 # py_install("seaborn")
 # py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
+# reticulate::virtualenv_install(packages = c("numpy==1.8.0"))
+# system2(reticulate::py_exe(), c("-m", "pip", "uninstall -y", 'scikit-learn'))
+
 
 
 
@@ -189,6 +192,7 @@ plt.subplot(122)
 plt.scatter(x_test[:0],x_test[:1],c=y_preds)
 plt.title('Truth')
 plot.show()
+plot.close()
 # erró en 3
 
 # metrica de calidad
