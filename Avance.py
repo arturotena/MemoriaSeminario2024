@@ -3,6 +3,19 @@
 # reticulate::py_install('matplotlib')
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
+
+import random 
+for i in range(5):
+
+    # Any number can be used in place of '0'.
+    random.seed(0)
+
+    # Generated random number will be between 1 to 1000.
+    print(random.randint(1, 1000))
+
+
+
+
 import os
 
 print(os.getcwd())
@@ -15,6 +28,8 @@ os.chdir('datasets')
 #  print(os.getcwd())
 print(os.getcwd())
 
+semilla=1 #'Una semilla fija para reproducibilidad
+
 
 # ---------------------------------------------------------------------------
 # 1. Importar bibliotecas
@@ -22,8 +37,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-pd.set_option('display.max_columns', 6)
-pd.set_option('display.width', 200)
+pd.set_option('display.max_columns', 8)
+pd.set_option('display.width', 90)
+#pd.set_option('display.max_colwidth', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
 from matplotlib import __version__ as mpl_version
@@ -64,10 +80,10 @@ if cols != 7: raise Exception(f"Se detectaron menos columnas que antes.")
 if rows <= 1500000: raise Exception(f"Se detectaron menos registros que antes.")
 if rows > 1600000: raise Exception(f"Se detectaron más registros que antes.")
 
-print('Visualización de los primeros y últimos 3 renglones, y 10 aleatorios:')
+print('Visualización de los primeros y últimos 3 renglones, y 5 aleatorios:')
 print(df.head(3))
 print(df.tail(3))
-print(df.sample(10))
+print(df.sample(5, random_state=semilla))
 
 print('Visualización de las columnas:')
 print(df.columns)
@@ -208,75 +224,66 @@ df_variables_en_columnas=df_subset.pivot(
 print('DataFrame con variables en columnas:' +
       f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
       f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
-df_variables_en_columnas.describe().T.sample(3)
+df_variables_en_columnas.describe().T.sample(10, random_state=semilla)
 
 # 4.7. Agrupación de variables
-xxx
 # Agrupar por tema las variables de los distintos horizontes.
 df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
-print(df_variables)
+print(df_variables.head())
+
+def imprime_array(s):
+    """Imprime hasta pd.options.display.width caracteres por renglón."""
+    for v in s:
+        max=pd.options.display.width
+        print(v[:max] if len(v) <= max else v[:(max - 3)] + '...')
+def imprime_siguentes_variables(df_variables):
+  primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
+  df_primeras_letras=df_variables['PrimerasLetras'] == primeras_letras # booleano
+  print(f'Las variables que inician con las primeras letras "{primeras_letras}":')
+  imprime_array(df_variables.loc[df_primeras_letras, 'Variable'].sort_values().values)
+def asigna_tema(df_variables, tema):
+  primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
+  df_variables.loc[df_variables['PrimerasLetras'] == primeras_letras, 'Tema'] = tema
+
+# Observando la salida, se decide el tema.
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Balance económico del sector público; al cierre del año; anual')
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Balanza Comercial; saldo anual al cierre del año; anual')
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anual')
+imprime_siguentes_variables(df_variables)
+# Son los diferentes tipos de inflación:
+#     Inflación general al cierre; al cierre del año; anual
+#     Inflación general para dentro de; ; mensual
+#         Inflación general para el mes en curso
+#         Inflación general para el siguiente mes
+#     Inflación general para los próximos; a largo plazo
+#     Inflación subyacente al cierre; al cierre del año; anual
+#     Inflación subyacente para dentro de; ; mensual
+#         Inflación general para el mes en curso
+#         Inflación general para el siguiente mes
+#     Inflacióngeneral_12m
+#     Inflaciónsubyacente_12m
+
+
+# Ver si corresponden las primeras letras de IdVariable con Tema
+xxx ver si el idvariable no corresponde entonces tal vez se eligio mal el tema
+xxx o hay incongruencia en esas variables y habria que quitarlas
+df_variables[['IdVariable','Tema']].sort_values(['Tema'], ascending=False)
+
+
+df_variables.loc[df_variables['Tema']==''].shape
+if df_variables.loc[df_variables['Tema']==''].shape[0] > 0:
+    raise Exception('Aún hay variables sin tema.')
+
 xxx
 
-def tema(primeras_palabras, tema, renglon, tres_letras):
-    """Regresa el tema que aplica al renglón."""
-    if renglon['PrimerasLetras'] == primeras_letras:
-        if renglon['PrimerasPalabras'] == primeras_palabras:
-            return tema
-    return renglon['Tema']
-def aplica_tema(df_variables, primeras_palabras, tema, primeras_letras):
-    lm=lambda renglon: tema(primeras_palabras,tema,renglon,primeras_letras)
-    #df_variables['Tema']=
-    df_variables.apply(lm, axis=1)
 
 
-primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
-print(f'Todas las variables que inician con las primeras letras "{primeras_letras}":')
-for s in df_variables.query('PrimerasLetras==@primeras_letras')['Variable']: print(f'=> {s}')
-
-
-xxx 'Balance económico del sector público al cierre del año'
-
-
-df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balanza Comercial,','Balanza Comercial',renglon,tres_letras), axis=1)
-df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balance económico,','Balance económico del sector público',renglon,primeras_letras), axis=1)
-#aplica_tema(df_variables, 'Balanza Comercial,', 'Balanza Comercial', primeras_letras)
-
-df_variables.query('Tema!=""')
-
-xxx
-dict_temas={ } # TresLetras, PrimerasPalabras = Tema
-dict_temas['Bal'] = {}
-dict_temas['Bal']['Balanza Comercial,']='Balanza Comercial'
-dict_temas['Bal']['Balance económico']='Balance económico del sector público'
-print(dict_temas)
-
-print(df_variables.head(1).T)
-df_variables.query('PrimerasLetras=="Bal" and DosPalabras=="Balanza Comercial,"')["Tema"] = 'Balanza Comercial'
-print(df_variables.head(1).T)
-
-
-
-
-xxx
-def normalise_row(row):
-    v3=row['VariableLetras3']
-    print(v3)
-    #print('%%%%'+dict_temas[v3]+'%%%%')
-#    if row['Currency'] == '$'
-#    return result
-#df['Normalized'] = 
-df.head(1).apply(lambda row : normalise_row(row), axis=1) 
-
-
-ser_VariableLetras3.shape # 20
-ser_VariableLetras3.values[0] # 'Bal'
-df_variables.query('VariableLetras3 == "Bal"')['VariablePalabra2'].shape # 7
-df_variables.query('VariableLetras3 == "Bal"')[['VariablePalabra2', 'Variable']] # Balanza Comercial, Balance económico del sector público 
-df_variables.query('VariablePalabra2 == "Balanza Comercial,"')[['VariablePalabra2', 'Variable']]
-df_variables.query('VariablePalabra2 == "Balanza Comercial,"')[['VariablePalabra2', 'Variable']]
 
 
 #### df=df.merge(df_variables, how='left', on=['IdVariable','Variable'])
@@ -360,7 +367,7 @@ plt.close()
 # Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
 df_corrs=df_variables_en_columnas.corr()
 print(f'Son {df_variables_en_columnas.columns.size} variables.')
-df_corrs.sample(4)
+df_corrs.sample(4, random_state=semilla)
 
 f = plt.figure(figsize=(10, 10))
 plt.matshow(df_corrs, f)
