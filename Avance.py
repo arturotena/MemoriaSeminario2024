@@ -265,15 +265,33 @@ asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anu
 #     Inflación general para los próximos; a largo plazo
 #     Inflación subyacente al cierre; al cierre del año; anual
 #     Inflación subyacente para dentro de; ; mensual
-#         Inflación general para el mes en curso
-#         Inflación general para el siguiente mes
+#         Inflación subyacente para el mes en curso
+#         Inflación subyacente para el siguiente mes
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
-df_variables.loc[df_variables['Variable'].str.startswith('Inflación general al cierre'), ['Tema']] \
-    = 'Inflación general al cierre; al cierre del año; anual'
-imprime_siguentes_variables(df_variables, n=10)
+def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
+    condicion = df_variables['Variable'].str.startswith(prefijos)
+    df_variables.loc[condicion, ['Tema']] = tema
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación general al cierre; al cierre del año; anual',
+        ('Inflación general al cierre')
+imprime_siguentes_variables(df_variables, n=14)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación general para dentro de; ; mensual',
+        ('Inflación general para dentro de ',
+         'Inflación general para el mes en curso',
+         'Inflación general para el siguiente mes'))
+imprime_siguentes_variables(df_variables, n=14)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación general para los próximos; a largo plazo',
+        ('Inflación general para los próximos'))
+print('Hasta el momento, se habn asignado los temas:')
+imprime_array(
+    df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
+xxx
+imprime_siguentes_variables(df_variables, n=14)
 
-
+xxx
 # Ver si corresponden las primeras letras de IdVariable con Tema
 xxx ver si el idvariable no corresponde entonces tal vez se eligio mal el tema
 xxx o hay incongruencia en esas variables y habria que quitarlas
