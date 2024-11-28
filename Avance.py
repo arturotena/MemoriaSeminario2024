@@ -234,16 +234,18 @@ df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.
 df_variables['Tema']=''
 print(df_variables.head())
 
-def imprime_array(s):
+def imprime_array(s, n=-1):
     """Imprime hasta pd.options.display.width caracteres por renglón."""
-    for v in s:
+    for v in (s if n < 0 else s[:n]):
         max=pd.options.display.width
         print(v[:max] if len(v) <= max else v[:(max - 3)] + '...')
-def imprime_siguentes_variables(df_variables):
+def imprime_siguentes_variables(df_variables, n=-1):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
-  df_primeras_letras=df_variables['PrimerasLetras'] == primeras_letras # booleano
   print(f'Las variables que inician con las primeras letras "{primeras_letras}":')
-  imprime_array(df_variables.loc[df_primeras_letras, 'Variable'].sort_values().values)
+  imprime_array(df_variables.loc[
+            (df_variables['PrimerasLetras'] == primeras_letras) &
+            (df_variables['Tema'] == ''),
+        'Variable'].sort_values().values, n)
 def asigna_tema(df_variables, tema):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
   df_variables.loc[df_variables['PrimerasLetras'] == primeras_letras, 'Tema'] = tema
@@ -255,7 +257,6 @@ imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balanza Comercial; saldo anual al cierre del año; anual')
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anual')
-imprime_siguentes_variables(df_variables)
 # Son los diferentes tipos de inflación:
 #     Inflación general al cierre; al cierre del año; anual
 #     Inflación general para dentro de; ; mensual
@@ -268,6 +269,9 @@ imprime_siguentes_variables(df_variables)
 #         Inflación general para el siguiente mes
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
+df_variables.loc[df_variables['Variable'].str.startswith('Inflación general al cierre'), ['Tema']] \
+    = 'Inflación general al cierre; al cierre del año; anual'
+imprime_siguentes_variables(df_variables, n=10)
 
 
 # Ver si corresponden las primeras letras de IdVariable con Tema
@@ -281,8 +285,6 @@ if df_variables.loc[df_variables['Tema']==''].shape[0] > 0:
     raise Exception('Aún hay variables sin tema.')
 
 xxx
-
-
 
 
 
