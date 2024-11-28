@@ -229,6 +229,7 @@ df_variables_en_columnas.describe().T.sample(10, random_state=semilla)
 # 4.7. Agrupación de variables
 # Agrupar por tema las variables de los distintos horizontes.
 df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
+df_variables=df_variables.sort_values(['Variable'])
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
@@ -261,12 +262,19 @@ def imprime_temas():
 imprime_temas()
 
 # Observando la salida, se decide el tema.
+
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balance económico del sector público; al cierre del año; anual')
 imprime_temas()
+
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balanza Comercial; saldo anual al cierre del año; anual')
 imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Competencia y Crecimiento; nivel')
+imprime_temas()
+
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anual')
 imprime_temas()
@@ -284,11 +292,12 @@ imprime_siguentes_variables(df_variables)
 #         Inflación subyacente para el siguiente mes
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
+
 def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
     condicion = df_variables['Variable'].str.startswith(prefijos)
     df_variables.loc[condicion, ['Tema']] = tema
 
-imprime_siguentes_variables(df_variables, n=62)
+imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general al cierre; al cierre del año; anual',
         ('Inflación general al cierre '))
@@ -302,14 +311,55 @@ pone_tema_por_prefijo_variable(df_variables,
          'Inflación general para el siguiente mes'))
 imprime_temas()
 
-imprime_siguentes_variables(df_variables, n=4)
+imprime_siguentes_variables(df_variables, n=3)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general para los próximos; a largo plazo',
         ('Inflación general para los próximos'))
 imprime_temas()
 
-xxx
+imprime_siguentes_variables(df_variables, n=61)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación subyacente al cierre; al cierre del año; anual',
+        ('Inflación subyacente al cierre '))
+imprime_temas()
+
 imprime_siguentes_variables(df_variables, n=14)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación subyacente para dentro de; ; mensual',
+        ('Inflación subyacente para dentro de ',
+         'Inflación subyacente para el mes en curso',
+         'Inflación subyacente para el siguiente mes'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables, n=3)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación subyacente para los próximos; a largo plazo',
+        ('Inflación subyacente para los próximos'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+# Ver su IdVariable también.
+print(df_variables.query('PrimerasLetras == "Inflaci" and Tema==""'))
+# También se consultó: https://www.banxico.org.mx/SieInternet/consultarDirectori
+# oInternetAction.do?sector=24&accion=consultarCuadro&idCuadro=CR155&locale=es
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación general para los próximos 12 meses',
+        ('Inflacióngeneral_12m_'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación subyacente para los próximos 12 meses',
+        ('Inflaciónsubyacente_12m_'))
+imprime_temas()
+
+
+
+
+
+xxx
+
+imprime_siguentes_variables(df_variables)
 
 xxx
 # Ver si corresponden las primeras letras de IdVariable con Tema
