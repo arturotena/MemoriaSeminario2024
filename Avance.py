@@ -238,10 +238,11 @@ def imprime_array(s, n=-1):
     """Imprime hasta pd.options.display.width caracteres por renglón."""
     for v in (s if n < 0 else s[:n]):
         max=pd.options.display.width
-        print(v[:max] if len(v) <= max else v[:(max - 3)] + '...')
+        valor=v[:max] if len(v) <= max else v[:(max - 3)] + '...'
+        print('-> ' + valor)
 def imprime_siguentes_variables(df_variables, n=-1):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
-  print(f'Las variables que inician con las primeras letras "{primeras_letras}":')
+  print(f'Variables con prefijo "{primeras_letras}":')
   imprime_array(df_variables.loc[
             (df_variables['PrimerasLetras'] == primeras_letras) &
             (df_variables['Tema'] == ''),
