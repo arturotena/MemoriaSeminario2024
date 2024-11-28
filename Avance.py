@@ -353,13 +353,54 @@ pone_tema_por_prefijo_variable(df_variables,
         ('Inflaciónsubyacente_12m_'))
 imprime_temas()
 
-
-
-
-
-xxx
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Intensidad Competencia; nivel')
+imprime_temas()
 
 imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Inversión Extranjera Directa; monto al cierre; anual')
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Nivel de la tasa de fondeo interbancaria; al cierre; trimestral',
+        ('Nivel de la tasa de fondeo interbancaria al cierre'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Nivel de la tasa de interés de los Bonos M a 10 años; al cierre; anual',
+        ('Nivel de la tasa de interés de los Bonos M a 10 años al cierre'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Nivel de la tasa de interés del cete a 28 días; al cierre; anual')
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Obstáculos Enfrentan Empresarios')
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Probabilidad de reducción en el PIB trimestral; trimestral')
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Saldo de requerimientos financieros del sector público; al cierre; anual')
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, 'Sectores Problemas Competencia')
+imprime_temas()
+xxx
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+
 
 xxx
 # Ver si corresponden las primeras letras de IdVariable con Tema
