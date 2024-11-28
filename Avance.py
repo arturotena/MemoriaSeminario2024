@@ -208,13 +208,10 @@ df_variables_en_columnas.describe().T.sample(3)
 xxx
 # Agrupar por tema las variables de los distintos horizontes.
 df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
-def tres_letras(s):
-    return s[:3]
-def primeras_dos_palabras(s):
-    palabras = s.split(' ')
-    return ' '.join(s.split(' ')[:2])
-df_variables['TresLetras']=df_variables['Variable'].apply(tres_letras)
-df_variables['DosPalabras']=df_variables['Variable'].apply(primeras_dos_palabras)
+df_variables['TresLetras']=df_variables['Variable'].apply(
+    lambda s: s[3])
+df_variables['DosPalabras']=df_variables['Variable'].apply(
+    lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
 print(df_variables.columns)
 
