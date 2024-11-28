@@ -202,7 +202,7 @@ df_variables_en_columnas=df_subset.pivot(
 print('DataFrame con variables en columnas:' +
       f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
       f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
-df_variables_en_columnas.describe().T.sample(15)
+df_variables_en_columnas.describe().T.sample(3)
 
 # 4.7. Agrupación de variables
 xxx
