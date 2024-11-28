@@ -240,6 +240,7 @@ def imprime_array(s, n=-1):
         max=pd.options.display.width
         valor=v[:max] if len(v) <= max else v[:(max - 3)] + '...'
         print('-> ' + valor)
+
 def imprime_siguentes_variables(df_variables, n=-1):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
   print(f'Variables con prefijo "{primeras_letras}":')
@@ -247,17 +248,29 @@ def imprime_siguentes_variables(df_variables, n=-1):
             (df_variables['PrimerasLetras'] == primeras_letras) &
             (df_variables['Tema'] == ''),
         'Variable'].sort_values().values, n)
+
 def asigna_tema(df_variables, tema):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
   df_variables.loc[df_variables['PrimerasLetras'] == primeras_letras, 'Tema'] = tema
 
+def imprime_temas():
+    #df_variables['Tema'].drop_duplicates().values
+    imprime_array(
+        df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
+
+imprime_temas()
+
 # Observando la salida, se decide el tema.
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balance económico del sector público; al cierre del año; anual')
+imprime_temas()
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balanza Comercial; saldo anual al cierre del año; anual')
+imprime_temas()
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anual')
+imprime_temas()
+
 imprime_siguentes_variables(df_variables)
 # Son los diferentes tipos de inflación:
 #     Inflación general al cierre; al cierre del año; anual
@@ -271,21 +284,14 @@ imprime_siguentes_variables(df_variables)
 #         Inflación subyacente para el siguiente mes
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
-
-
-def imprime_temas():
-    #df_variables['Tema'].drop_duplicates().values
-    imprime_array(
-        df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
-
 def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
     condicion = df_variables['Variable'].str.startswith(prefijos)
     df_variables.loc[condicion, ['Tema']] = tema
 
-imprime_siguentes_variables(df_variables, n=14)
+imprime_siguentes_variables(df_variables, n=62)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general al cierre; al cierre del año; anual',
-        ('Inflación general al cierre'))
+        ('Inflación general al cierre '))
 imprime_temas()
 
 imprime_siguentes_variables(df_variables, n=14)
@@ -294,13 +300,14 @@ pone_tema_por_prefijo_variable(df_variables,
         ('Inflación general para dentro de ',
          'Inflación general para el mes en curso',
          'Inflación general para el siguiente mes'))
-imprime_siguentes_variables(df_variables, n=14)
+imprime_temas()
+
+imprime_siguentes_variables(df_variables, n=4)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general para los próximos; a largo plazo',
         ('Inflación general para los próximos'))
-print('Hasta el momento, se habn asignado los temas:')
-imprime_array(
-    df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
+imprime_temas()
+
 xxx
 imprime_siguentes_variables(df_variables, n=14)
 
