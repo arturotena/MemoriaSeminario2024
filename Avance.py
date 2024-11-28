@@ -226,8 +226,8 @@ print('DataFrame con variables en columnas:' +
       f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
 df_variables_en_columnas.describe().T.sample(10, random_state=semilla)
 
-# 4.7. Agrupación de variables
-# Agrupar por tema las variables de los distintos horizontes.
+# 4.7. Agrupación de las variables por tema
+# Cada tema tiene una o más variables para distintos horizontes de expectativa.
 df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
 df_variables=df_variables.sort_values(['Variable'])
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
