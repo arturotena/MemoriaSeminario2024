@@ -235,20 +235,20 @@ df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.
 df_variables['Tema']=''
 print(df_variables.head())
 
-def imprime_array(s, n=-1):
+def imprime_array(s, n=-1, width=-1):
     """Imprime hasta pd.options.display.width caracteres por renglón."""
     for v in (s if n < 0 else s[:n]):
-        max=pd.options.display.width
+        max=pd.options.display.width if width == -1 else width
         valor=v[:max] if len(v) <= max else v[:(max - 3)] + '...'
         print('-> ' + valor)
 
-def imprime_siguentes_variables(df_variables, n=-1):
+def imprime_siguentes_variables(df_variables, n=-1, width=-1):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
   print(f'Variables con prefijo "{primeras_letras}":')
   imprime_array(df_variables.loc[
             (df_variables['PrimerasLetras'] == primeras_letras) &
             (df_variables['Tema'] == ''),
-        'Variable'].sort_values().values, n)
+        'Variable'].sort_values().values, n, width)
 
 def asigna_tema(df_variables, tema):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
@@ -392,7 +392,56 @@ imprime_temas()
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Sectores Problemas Competencia')
 imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Tasa nacional de desocupación; al cierre; anual',
+        ('Tasa nacional de desocupación al cierre'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Tasa nacional de desocupación promedio; anual',
+        ('Tasa nacional de desocupación promedio del '))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Valor del tipo de cambio al cierre del año en curso',
+        ('Valor del tipo de cambio al cierre del año en curso'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Valor del tipo de cambio promedio; durante el mes',
+        ('Valor del tipo de cambio promedio durante el mes'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Variación desestacionalizada del PIB; trimestral',
+        ('Variación desestacionalizada del PIB'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+pone_tema_por_prefijo_variable(df_variables,
+    'Variación en el número de trabajadores asegurados',
+        ('Variación en el número de trabajadores asegurados'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables,5)
+pone_tema_por_prefijo_variable(df_variables,
+    'Variación porcentual anual del PIB de Estados Unidos; anual',
+        ('Variación porcentual anual del PIB de Estados Unidos'))
+imprime_temas()
 xxx
+imprime_siguentes_variables(df_variables, width=200)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
@@ -400,6 +449,55 @@ pone_tema_por_prefijo_variable(df_variables,
         ())
 imprime_temas()
 
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
+
+
+imprime_siguentes_variables(df_variables)
+asigna_tema(df_variables, )
+pone_tema_por_prefijo_variable(df_variables,
+    ,
+        ())
+imprime_temas()
 
 
 xxx
