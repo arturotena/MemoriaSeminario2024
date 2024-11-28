@@ -23,7 +23,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pd.set_option('display.max_columns', 6)
-#pd.set_option('display.width', 130)
+pd.set_option('display.width', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
 from matplotlib import __version__ as mpl_version
@@ -233,9 +233,12 @@ def aplica_tema(df_variables, primeras_palabras, tema, primeras_letras):
 
 
 primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
+print(f'Todas las variables que inician con las primeras letras "{primeras_letras}":')
+for s in df_variables.query('PrimerasLetras==@primeras_letras')['Variable']: print(f'=> {s}')
 
-print(f'Todas las variables que inician con las primeras letras "{primeras_letras}"\n',
-  df_variables.query('PrimerasLetras==@primeras_letras')[['Variable']])
+
+xxx 'Balance económico del sector público al cierre del año'
+
 
 df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balanza Comercial,','Balanza Comercial',renglon,tres_letras), axis=1)
 df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balance económico,','Balance económico del sector público',renglon,primeras_letras), axis=1)
