@@ -434,43 +434,50 @@ pone_tema_por_prefijo_variable(df_variables,
     'Variación porcentual anual del PIB de Estados Unidos; anual',
         ('Variación porcentual anual del PIB de Estados Unidos'))
 imprime_temas()
-xxx
+
 imprime_siguentes_variables(df_variables, width=200)
-asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Variación porcentual anual del PIB, probabilidad en el rango; anual',
+        ('Variación porcentual anual del PIB en '))
 imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Variación porcentual anual del PIB para los próximos 10 años; a largo plazo',
+        ('Variación porcentual anual del PIB para los próximos 10 años'))
+imprime_temas()
+
+imprime_siguentes_variables(df_variables, width=150)
+pone_tema_por_prefijo_variable(df_variables,
+    'Variación porcentual anual del PIB; anual',
+        ('Variación porcentual anual del PIB, año anterior al correspondiente del levantamiento de la Encuesta (año t-1)',
+         'Variación porcentual anual del PIB, año en curso (año t)',
+         'Variación porcentual anual del PIB, siguiente año (año t+1)',
+         'Variación porcentual anual del PIB, dentro de dos años (año t+2)',
+         'Variación porcentual anual del PIB, dentro de tres años (año t+3)'
+         ))
 imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Variación porcentual anual del PIB; trimstral',
+        ('Variación porcentual anual del PIB, '))
+imprime_temas()
+xxx
+imprime_siguentes_variables(df_variables)
+# Ver su IdVariable también.
+consulta_primeras_letras = ('cempbt',
+                            'cempmt',
+                            'cempnst',
+                            'cempnst')
+print(df_variables.query('PrimerasLetras in @consulta_primeras_letras'))
+pone_tema_por_prefijo_variable(df_variables,
+    'coyunemp',
+        consulta_primeras_letras)
 imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
-pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
-imprime_temas()
-
-imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
-pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
-imprime_temas()
-
-imprime_siguentes_variables(df_variables)
+print(df_variables.query('PrimerasLetras == "cempnst"'))
 asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
     ,
