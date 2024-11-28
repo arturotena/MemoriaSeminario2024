@@ -83,6 +83,12 @@ print('Visualización de estadísticas descriptivas de las columnas numéricas:'
 df.describe()
 # Existe el IdAnalista con valor a cero.
 
+print('Visualización de estadísticas descriptivas de la longitud de IdVariable:')
+print(df['IdVariable'].apply(lambda s: len(s)).describe())
+
+print('Visualización de estadísticas descriptivas de la longitud de Variable:')
+print(df['Variable'].apply(lambda s: len(s)).describe())
+
 
 # --------------------------------------------------------------------------
 # 4. Preparación de los datos
@@ -208,40 +214,44 @@ df_variables_en_columnas.describe().T.sample(3)
 xxx
 # Agrupar por tema las variables de los distintos horizontes.
 df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
-df_variables['TresLetras']=df_variables['Variable'].apply(lambda s: s[:3])
+df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
-print(df_variables.columns)
+print(df_variables)
+xxx
 
-def tema(dos_palabras, tema, renglon, tres_letras):
+def tema(primeras_palabras, tema, renglon, tres_letras):
     """Regresa el tema que aplica al renglón."""
-    if renglon['TresLetras'] == tres_letras:
-        if renglon['DosPalabras'] == dos_palabras:
+    if renglon['PrimerasLetras'] == primeras_letras:
+        if renglon['PrimerasPalabras'] == primeras_palabras:
             return tema
     return renglon['Tema']
-def aplica_tema(df_variables, dos_palabras, tema, tres_letras):
-    lm=lambda renglon: tema(dos_palabras,tema,renglon,tres_letras)
+def aplica_tema(df_variables, primeras_palabras, tema, primeras_letras):
+    lm=lambda renglon: tema(primeras_palabras,tema,renglon,primeras_letras)
     #df_variables['Tema']=
     df_variables.apply(lm, axis=1)
 
 
-tres_letras=df_variables.query('Tema==""').head(1)['TresLetras'].values[0]
-print(df_variables.query('TresLetras==@tres_letras')[['Variable','DosPalabras']])
+primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
+
+print(f'Todas las variables que inician con las primeras letras "{primeras_letras}"\n',
+  df_variables.query('PrimerasLetras==@primeras_letras')[['Variable']])
+
 df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balanza Comercial,','Balanza Comercial',renglon,tres_letras), axis=1)
-df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balance económico,','Balance económico del sector público',renglon,tres_letras), axis=1)
-#aplica_tema(df_variables, 'Balanza Comercial,', 'Balanza Comercial', tres_letras)
+df_variables['Tema']=df_variables.apply(lambda renglon: tema('Balance económico,','Balance económico del sector público',renglon,primeras_letras), axis=1)
+#aplica_tema(df_variables, 'Balanza Comercial,', 'Balanza Comercial', primeras_letras)
 
 df_variables.query('Tema!=""')
 
 xxx
-dict_temas={ } # TresLetras, DosPalabras = Tema
+dict_temas={ } # TresLetras, PrimerasPalabras = Tema
 dict_temas['Bal'] = {}
 dict_temas['Bal']['Balanza Comercial,']='Balanza Comercial'
 dict_temas['Bal']['Balance económico']='Balance económico del sector público'
 print(dict_temas)
 
 print(df_variables.head(1).T)
-df_variables.query('TresLetras=="Bal" and DosPalabras=="Balanza Comercial,"')["Tema"] = 'Balanza Comercial'
+df_variables.query('PrimerasLetras=="Bal" and DosPalabras=="Balanza Comercial,"')["Tema"] = 'Balanza Comercial'
 print(df_variables.head(1).T)
 
 
