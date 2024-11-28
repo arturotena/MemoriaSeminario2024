@@ -463,48 +463,57 @@ pone_tema_por_prefijo_variable(df_variables,
     'Variación porcentual anual del PIB; trimstral',
         ('Variación porcentual anual del PIB, '))
 imprime_temas()
-xxx
+
 imprime_siguentes_variables(df_variables)
-# Ver su IdVariable también.
-consulta_primeras_letras = ('cempbt',
-                            'cempmt',
-                            'cempnst',
-                            'cempnst')
-print(df_variables.query('PrimerasLetras in @consulta_primeras_letras'))
+print(df_variables.loc[df_variables['IdVariable'].str.startswith('coyun')])
+print(df_variables.loc[df_variables['Variable'].str.startswith('cemp')])
 pone_tema_por_prefijo_variable(df_variables,
-    'coyunemp',
-        consulta_primeras_letras)
+    'Coyuntura empleo (?); bueno, malo, no seguro',
+        ('cemp'))
 imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-print(df_variables.query('PrimerasLetras == "cempnst"'))
-asigna_tema(df_variables, )
+print(df_variables.loc[df_variables['IdVariable'].str.startswith('clima')])
+print(df_variables.loc[df_variables['Variable'].str.startswith('cneg')])
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Cambio climático (?): empeorará, mejorará, permanecerá igual',
+        ('cneg'))
 imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
+print(df_variables.loc[df_variables['IdVariable'].str.startswith('ecopai')])
+print(df_variables.loc[df_variables['Variable'].str.startswith('ep')])
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Economía del país (?): no, sí',
+        ('ep'))
 imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Inflación general, probabilidad en el rango en 12 meses; mensual',
+        ('inflacióngeneral_prob12m'))
 imprime_temas()
-
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, )
 pone_tema_por_prefijo_variable(df_variables,
-    ,
-        ())
+    'Inflación subyacente, probabilidad en el rango en 12 meses; mensual',
+        ('inflaciónsubyacente_prob12m'))
 imprime_temas()
+
+imprime_siguentes_variables(df_variables)
+imprime_array(df_variables.loc[df_variables['Variable'].str.startswith('limcrec')]['Variable'])
+pone_tema_por_prefijo_variable(df_variables,
+    'Límite de crecimiento; anual',
+        ('limcrec'))
+imprime_temas()
+
+if df_variables[df_variables['Tema']==''].shape[0] != 0:
+    raise Exception('Existen variables que no se les ha asignado tema')
+
+imprime_temas()
+if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 35:
+    raise Exception('Cambió el número de temas.')
+
 
 
 xxx
