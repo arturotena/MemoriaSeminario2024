@@ -213,8 +213,8 @@ df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.
 df_variables['Tema']=''
 print(df_variables.columns)
 
-#    """Regresa el tema que aplica al renglón."""
 def tema(dos_palabras, tema, renglon, tres_letras):
+    """Regresa el tema que aplica al renglón."""
     if renglon['TresLetras'] == tres_letras:
         if renglon['DosPalabras'] == dos_palabras:
             return tema
