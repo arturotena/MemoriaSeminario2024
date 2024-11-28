@@ -514,6 +514,10 @@ imprime_temas()
 if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 35:
     raise Exception('Cambió el número de temas.')
 
+# Cuántas variables tiene cada tema
+print(df_variables.groupby(['Tema'])['Variable'].count())
+print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
+
 
 
 xxx
