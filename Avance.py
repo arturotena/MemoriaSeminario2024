@@ -272,13 +272,22 @@ imprime_siguentes_variables(df_variables)
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
 
-xxx bug:
+
+def imprime_temas():
+    #df_variables['Tema'].drop_duplicates().values
+    imprime_array(
+        df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
+
 def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
     condicion = df_variables['Variable'].str.startswith(prefijos)
     df_variables.loc[condicion, ['Tema']] = tema
+
+imprime_siguentes_variables(df_variables, n=14)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general al cierre; al cierre del año; anual',
-        ('Inflación general al cierre')
+        ('Inflación general al cierre'))
+imprime_temas()
+
 imprime_siguentes_variables(df_variables, n=14)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general para dentro de; ; mensual',
