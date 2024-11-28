@@ -258,6 +258,7 @@ imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balanza Comercial; saldo anual al cierre del año; anual')
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anual')
+imprime_siguentes_variables(df_variables)
 # Son los diferentes tipos de inflación:
 #     Inflación general al cierre; al cierre del año; anual
 #     Inflación general para dentro de; ; mensual
@@ -270,6 +271,8 @@ asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anu
 #         Inflación subyacente para el siguiente mes
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
+
+xxx bug:
 def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
     condicion = df_variables['Variable'].str.startswith(prefijos)
     df_variables.loc[condicion, ['Tema']] = tema
