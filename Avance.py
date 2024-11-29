@@ -4,18 +4,6 @@
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
 
-import random 
-for i in range(5):
-
-    # Any number can be used in place of '0'.
-    random.seed(0)
-
-    # Generated random number will be between 1 to 1000.
-    print(random.randint(1, 1000))
-
-
-
-
 import os
 
 print(os.getcwd())
@@ -261,7 +249,7 @@ def imprime_temas():
 
 imprime_temas()
 
-# Observando la salida, se decide el tema.
+# Observando la salida, se decidirá el tema de cada grupo de variables.
 
 imprime_siguentes_variables(df_variables)
 asigna_tema(df_variables, 'Balance económico del sector público; al cierre del año; anual')
@@ -517,6 +505,47 @@ if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 35:
 # Cuántas variables tiene cada tema
 print(df_variables.groupby(['Tema'])['Variable'].count())
 print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
+
+xxx
+
+
+x = df_variables[['IdVariable','Tema']]
+x.to_csv('BORRAR.csv')
+
+
+bonost	Nivel de la tasa de interés del cete a 28 días
+bonost1	Nivel de la tasa de interés del cete a 28 días
+bonost2	Nivel de la tasa de interés del cete a 28 días
+bonost3	Nivel de la tasa de interés del cete a 28 días
+cetest	Nivel de la tasa de interés del cete a 28 días
+cetest1	Nivel de la tasa de interés del cete a 28 días
+cetest2	Nivel de la tasa de interés del cete a 28 días
+cetest3	Nivel de la tasa de interés del cete a 28 días
+fondeot	Nivel de la tasa de interés del cete a 28 días
+fondeotmas1	Nivel de la tasa de interés del cete a 28 días
+fondeotmas2	Nivel de la tasa de interés del cete a 28 días
+fondeotmas3	Nivel de la tasa de interés del cete a 28 días
+fondeotmas4	Nivel de la tasa de interés del cete a 28 días
+fondeotmas5	Nivel de la tasa de interés del cete a 28 días
+fondeotmas6	Nivel de la tasa de interés del cete a 28 días
+fondeotmas7	Nivel de la tasa de interés del cete a 28 días
+fondeotmas8	Nivel de la tasa de interés del cete a 28 días
+fondeotmas9	Nivel de la tasa de interés del cete a 28 días
+
+Inflación general al cierre
+
+
+
+xxx
+
+
+df_variables.query('Tema == "Nivel de la tasa de interés del cete a 28 días; al cierre; anual"')
+esto esta maaal se ve en los idvariable
+
+x['PrimerasLetrasIdVariable']=x['IdVariable'].apply(lambda s: s[:10])
+....
+
+xxx
 
 
 
