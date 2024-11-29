@@ -4,6 +4,17 @@
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
 
+# RStudio
+# library(reticulate)
+# py_install("pandas")
+# py_install("matplotlib")
+# py_install("scikit-learn")
+# py_install("seaborn")
+# py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
+# reticulate::virtualenv_install(packages = c("numpy==1.8.0"))
+# system2(reticulate::py_exe(), c("-m", "pip", "uninstall -y", 'scikit-learn'))
+
+
 import os
 
 print(os.getcwd())
@@ -201,18 +212,6 @@ df = df.reindex(columns=['Fecha','Año', 'Mes','IdVariable','Variable','IdAnalis
 print('\nDespués:')
 print(df.columns)
 print(df.head())
-
-# 4.9 Pasar las variables a columnas
-idVariable_unicas=df['IdVariable'].unique()
-df_subset=df.query("IdVariable in @idVariable_unicas")
-df_variables_en_columnas=df_subset.pivot(
-    index=['Año', 'Mes', 'Fecha','IdAnalista'],
-    columns=['IdVariable'], #, 'Variable'],
-    values='Expectativa')
-print('DataFrame con variables en columnas:' +
-      f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
-      f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
-df_variables_en_columnas.describe().T.sample(10, random_state=semilla)
 
 # 4.7. Agrupación de las variables por tema
 # Cada tema tiene una o más variables para distintos horizontes de expectativa.
@@ -506,11 +505,65 @@ if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 35:
 print(df_variables.groupby(['Tema'])['Variable'].count())
 print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
 
+# Quita las variables temporales que se usaron para el tema.
+df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
+
+# Asigna el tema al data set.
+df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
+df = df.reindex(columns=['Fecha', 'Año', 'Mes', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
+if df.loc[df['Tema'] == ''].shape[0] > 0:
+    raise Exception('No todos los renglones quedaron con tema')
+
+
+# 4.9 Pasar las variables a columnas
+idVariable_unicas=df['IdVariable'].unique()
+df_subset=df.query("IdVariable in @idVariable_unicas")
+df_variables_en_columnas=df_subset.pivot(
+    index=['Año', 'Mes', 'Fecha','IdAnalista'],
+    columns=['IdVariable'], #, 'Variable'],
+    values='Expectativa')
+print('DataFrame con variables en columnas:' +
+      f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
+      f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
+df_variables_en_columnas.describe().T.sample(10, random_state=semilla)
+
+
+
+xxxxxxxxxxxxxx
+
+
+
+
+####
+
+
+
+
+
+for column in df:
+    plt.figure()
+    df.boxplot([column])
+df.boxplot(['Expectativa'])
+df[['IdAnalista']].drop_duplicates().boxplot(['IdAnalista'])
+plt.show()
+plt.close()
+df[['IdAnalista']].drop_duplicates().describe()
+type()
 xxx
+# boxplot y violin
+# metodo 1
+import seaborn as sns
+df_plot=df[['IdAnalista']].drop_duplicates()
+sns.violinplot(data=df_plot, inner=None, color='white', linewidth=1)
+sns.boxplot(data=df_plot, width=0.3, color='orange')
+# metodo 2
+#plt.boxplot(df[['IdAnalista']].drop_duplicates().values)
+df[['IdAnalista']].drop_duplicates().boxplot(['IdAnalista'])
+plt.violinplot(df[['IdAnalista']].drop_duplicates().values)
+# muestra
+plt.show()
+plt.close()
 
-
-x = df_variables[['IdVariable','Tema']]
-x.to_csv('BORRAR.csv')
 
 
 bonost	Nivel de la tasa de interés del cete a 28 días
