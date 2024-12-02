@@ -17,15 +17,25 @@
 
 import os
 
-print(os.getcwd())
-os.chdir('Downloads')
-os.chdir('GitHub')
+print('Directorio inicial:', os.getcwd())
+try:
+    os.chdir('d:/')
+    os.chdir('Proyectos/RStudioProyectos/GitHub')
+except FileNotFoundError as e:
+    print('No estamos en Windows')
+
+try:
+    os.chdir('Downloads')
+    os.chdir('GitHub')
+except FileNotFoundError as e:
+    print('No estamos en Mac')
+
 os.chdir('MemoriaSeminario2024')
 os.chdir('datasets')
-# if not os.getcwd().endswith('MemoriaSeminario2024'):
-#  os.chdir('Downloads/MemoriaSeminario2024')
-#  print(os.getcwd())
-print(os.getcwd())
+
+print('Directorio actual:', os.getcwd())
+if not os.getcwd().endswith('datasets'):
+    raise Exception('No se pudo encontrar el directorio de trabajo')
 
 semilla=1 #'Una semilla fija para reproducibilidad
 
@@ -45,11 +55,17 @@ from matplotlib import __version__ as mpl_version
 print(f'Pandas: {pd.__version__}.')
 print(f'Numpy: {np.__version__}.')
 print(f'Matplotlib: {mpl_version}.')
-if pd.__version__ not in ['2.2.2','2.2.3']:
+if pd.__version__ in ['2.2.2','2.2.3']:
+    print('Pandas OK')
+else:
     raise Exception(f'Versión inesperada de Pandas: {pd.__version__}.')
-if np.__version__ not in ['2.1.1','2.1.3']:
+if np.__version__ in ['2.1.1','2.1.3']:
+    print('Numpy OK')
+else:
     raise Exception(f'Versión inesperada de Numpy: {np.__version__}.')
-if mpl_version != '3.9.2':
+if mpl_version == '3.9.2':
+    print('Matplotlib OK')
+else:
     raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
 
 
@@ -95,14 +111,14 @@ print(df.dtypes)
 # Sólo 2 se detectan como numéricas
 
 print('Visualización de estadísticas descriptivas de las columnas numéricas:')
-df.describe()
+print(df.describe())
 # Existe el IdAnalista con valor a cero.
 
-print('Visualización de estadísticas descriptivas de la longitud de IdVariable:')
-print(df['IdVariable'].apply(lambda s: len(s)).describe())
+print('Visualización de estadísticas descriptivas de la longitud de NombreAbsolutoCorto:')
+print(df['NombreAbsolutoCorto'].apply(lambda s: len(s)).describe())
 
-print('Visualización de estadísticas descriptivas de la longitud de Variable:')
-print(df['Variable'].apply(lambda s: len(s)).describe())
+print('Visualización de estadísticas descriptivas de la longitud de NombreAbsolutoLargo:')
+print(df['NombreAbsolutoLargo'].apply(lambda s: len(s)).describe())
 
 
 # --------------------------------------------------------------------------
@@ -182,18 +198,18 @@ print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,}' +
 # por lo que pueden quedar eliminados registros con variables
 # que no necesariamente estén duplicadas en una fecha.
 def quita_duplicados(df_orig, df_busqueda, str_columna):
-  """Elimina de df_orig los registros que tengan en la str_columna
-  los valores que estén repetidos en df_busqueda.
-  Regresa: el DataFrame sin los registros encontrados."""
-  df_columna = df_busqueda[[str_columna]]
-  ser_duplicados_booleans = df_columna.duplicated(keep=False)  # todos los valores duplicados
-  ser_valores_duplicados = df_columna.loc[ser_duplicados_booleans].drop_duplicates(keep='first')[str_columna]  # solo los duplicados
-  df_resultado = df_orig.query(str_columna + ' not in @ser_valores_duplicados')
-  cuenta_eliminados = df_orig.query(str_columna + ' in @ser_valores_duplicados').shape[0]
-  cuenta_original = df.shape[0]
-  pct_eliminado = (1 - (cuenta_original - cuenta_eliminados) / cuenta_original) * 100
-  print(f'Se eliminaron {cuenta_eliminados:,} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
-  return df_resultado
+    """Elimina de df_orig los registros que tengan en la str_columna
+    los valores que estén repetidos en df_busqueda.
+    Regresa: el DataFrame sin los registros encontrados."""
+    df_columna = df_busqueda[[str_columna]]
+    ser_duplicados_booleans = df_columna.duplicated(keep=False)  # todos los valores duplicados
+    ser_valores_duplicados = df_columna.loc[ser_duplicados_booleans].drop_duplicates(keep='first')[str_columna]  # solo los duplicados
+    df_resultado = df_orig.query(str_columna + ' not in @ser_valores_duplicados')
+    cuenta_eliminados = df_orig.query(str_columna + ' in @ser_valores_duplicados').shape[0]
+    cuenta_original = df.shape[0]
+    pct_eliminado = (1 - (cuenta_original - cuenta_eliminados) / cuenta_original) * 100
+    print(f'Se eliminaron {cuenta_eliminados:,} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
+    return df_resultado
 # NombresRelativos
 df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'IdVariable')
@@ -495,6 +511,8 @@ pone_tema_por_prefijo_variable(df_variables,
 imprime_temas()
 
 if df_variables[df_variables['Tema']==''].shape[0] != 0:
+    print('Existen variables que no se les ha asignado tema:')
+    imprime_siguentes_variables(df_variables)
     raise Exception('Existen variables que no se les ha asignado tema')
 
 imprime_temas()
