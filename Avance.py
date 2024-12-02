@@ -15,6 +15,9 @@
 # system2(reticulate::py_exe(), c("-m", "pip", "uninstall -y", 'scikit-learn'))
 
 
+verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
+
+
 import os
 
 print('Directorio inicial:', os.getcwd())
