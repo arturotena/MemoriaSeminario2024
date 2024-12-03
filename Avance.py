@@ -244,10 +244,12 @@ print(df_variables.head())
 
 def imprime_array(s, n=-1, width=-1):
     """Imprime hasta pd.options.display.width caracteres por renglón."""
+    c = 0
     for v in (s if n < 0 else s[:n]):
         max=pd.options.display.width if width == -1 else width
         valor=v[:max] if len(v) <= max else v[:(max - 3)] + '...'
-        print('-> ' + valor)
+        c = c + 1
+        print(f'{c} -> {valor}')
 
 def imprime_siguentes_variables(df_variables, n=-1, width=-1):
   primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
@@ -257,34 +259,41 @@ def imprime_siguentes_variables(df_variables, n=-1, width=-1):
             (df_variables['Tema'] == ''),
         'Variable'].sort_values().values, n, width)
 
-def asigna_tema(df_variables, tema):
-  primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
-  df_variables.loc[df_variables['PrimerasLetras'] == primeras_letras, 'Tema'] = tema
-
 def imprime_temas():
     #df_variables['Tema'].drop_duplicates().values
     imprime_array(
         df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
 
+def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
+    condicion = df_variables['Variable'].str.startswith(prefijos)
+    m=df_variables.loc[condicion, ['Variable']].drop_duplicates(keep='first').shape[0]
+    df_variables.loc[condicion, ['Tema']] = tema
+    print(f'Tema asignado para {m} variables distintas')
+
 imprime_temas()
+# En este momento no hay ninguno.
 
 # Observando la salida, se decidirá el tema de cada grupo de variables.
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Balance económico del sector público; al cierre del año; anual')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Balance económico del sector público; al cierre del año; anual',
+        ('Balance económico del sector público'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Balanza Comercial; saldo anual al cierre del año; anual')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Balanza Comercial; saldo anual al cierre del año; anual',
+        ('Balanza'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Competencia y Crecimiento; nivel')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Competencia y Crecimiento; nivel',
+        ('Compete'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Cuenta Corriente; saldo anual al cierre del año; anual')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Cuenta Corriente; saldo anual al cierre del año; anual',
+        ('Cuenta '))
 
 imprime_siguentes_variables(df_variables)
 # Son los diferentes tipos de inflación:
@@ -300,15 +309,10 @@ imprime_siguentes_variables(df_variables)
 #     Inflacióngeneral_12m
 #     Inflaciónsubyacente_12m
 
-def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
-    condicion = df_variables['Variable'].str.startswith(prefijos)
-    df_variables.loc[condicion, ['Tema']] = tema
-
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general al cierre; al cierre del año; anual',
         ('Inflación general al cierre '))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, n=14)
 pone_tema_por_prefijo_variable(df_variables,
@@ -316,19 +320,16 @@ pone_tema_por_prefijo_variable(df_variables,
         ('Inflación general para dentro de ',
          'Inflación general para el mes en curso',
          'Inflación general para el siguiente mes'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, n=3)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general para los próximos; a largo plazo',
         ('Inflación general para los próximos'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación subyacente al cierre; al cierre del año; anual',
         ('Inflación subyacente al cierre '))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, n=14)
 pone_tema_por_prefijo_variable(df_variables,
@@ -336,13 +337,11 @@ pone_tema_por_prefijo_variable(df_variables,
         ('Inflación subyacente para dentro de ',
          'Inflación subyacente para el mes en curso',
          'Inflación subyacente para el siguiente mes'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, n=3)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación subyacente para los próximos; a largo plazo',
         ('Inflación subyacente para los próximos'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 # Ver su IdVariable también.
@@ -352,107 +351,100 @@ print(df_variables.query('PrimerasLetras == "Inflaci" and Tema==""'))
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general para los próximos 12 meses',
         ('Inflacióngeneral_12m_'))
-imprime_temas()
-
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación subyacente para los próximos 12 meses',
         ('Inflaciónsubyacente_12m_'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Intensidad Competencia; nivel')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Intensidad Competencia; nivel',
+        ('Intensi'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Inversión Extranjera Directa; monto al cierre; anual')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Inversión Extranjera Directa; monto al cierre; anual',
+        ('Inversi'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Nivel de la tasa de fondeo interbancaria; al cierre; trimestral',
         ('Nivel de la tasa de fondeo interbancaria al cierre'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Nivel de la tasa de interés de los Bonos M a 10 años; al cierre; anual',
         ('Nivel de la tasa de interés de los Bonos M a 10 años al cierre'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Nivel de la tasa de interés del cete a 28 días; al cierre; anual')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Nivel de la tasa de interés del cete a 28 días; al cierre; anual',
+        ('Nivel de la tasa de interés del cete a 28 días al cierre'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Obstáculos Enfrentan Empresarios')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Obstáculos Enfrentan Empresarios',
+        ('Obstáculos Enfrentan Empresarios'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Probabilidad de reducción en el PIB trimestral; trimestral')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Probabilidad de reducción en el PIB trimestral; trimestral',
+        ('Probabilidad de reducción en el PIB trimestral'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Saldo de requerimientos financieros del sector público; al cierre; anual')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Saldo de requerimientos financieros del sector público; al cierre; anual',
+        ('Saldo de requerimientos financieros del sector público al cierre del'))
 
 imprime_siguentes_variables(df_variables)
-asigna_tema(df_variables, 'Sectores Problemas Competencia')
-imprime_temas()
+pone_tema_por_prefijo_variable(df_variables,
+    'Sectores Problemas Competencia',
+        ('Sectores Problemas Competencia'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Tasa nacional de desocupación; al cierre; anual',
         ('Tasa nacional de desocupación al cierre'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Tasa nacional de desocupación promedio; anual',
         ('Tasa nacional de desocupación promedio del '))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Valor del tipo de cambio al cierre del año en curso',
         ('Valor del tipo de cambio al cierre del año en curso'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Valor del tipo de cambio promedio; durante el mes',
         ('Valor del tipo de cambio promedio durante el mes'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Variación desestacionalizada del PIB; trimestral',
         ('Variación desestacionalizada del PIB'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Variación en el número de trabajadores asegurados',
         ('Variación en el número de trabajadores asegurados'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables,5)
 pone_tema_por_prefijo_variable(df_variables,
     'Variación porcentual anual del PIB de Estados Unidos; anual',
         ('Variación porcentual anual del PIB de Estados Unidos'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, width=200)
 pone_tema_por_prefijo_variable(df_variables,
     'Variación porcentual anual del PIB, probabilidad en el rango; anual',
         ('Variación porcentual anual del PIB en '))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Variación porcentual anual del PIB para los próximos 10 años; a largo plazo',
         ('Variación porcentual anual del PIB para los próximos 10 años'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables, width=150)
 pone_tema_por_prefijo_variable(df_variables,
@@ -463,13 +455,11 @@ pone_tema_por_prefijo_variable(df_variables,
          'Variación porcentual anual del PIB, dentro de dos años (año t+2)',
          'Variación porcentual anual del PIB, dentro de tres años (año t+3)'
          ))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Variación porcentual anual del PIB; trimstral',
         ('Variación porcentual anual del PIB, '))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 print(df_variables.loc[df_variables['IdVariable'].str.startswith('coyun')])
@@ -477,7 +467,6 @@ print(df_variables.loc[df_variables['Variable'].str.startswith('cemp')])
 pone_tema_por_prefijo_variable(df_variables,
     'Coyuntura empleo (?); bueno, malo, no seguro',
         ('cemp'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 print(df_variables.loc[df_variables['IdVariable'].str.startswith('clima')])
@@ -485,7 +474,6 @@ print(df_variables.loc[df_variables['Variable'].str.startswith('cneg')])
 pone_tema_por_prefijo_variable(df_variables,
     'Cambio climático (?): empeorará, mejorará, permanecerá igual',
         ('cneg'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 print(df_variables.loc[df_variables['IdVariable'].str.startswith('ecopai')])
@@ -493,34 +481,32 @@ print(df_variables.loc[df_variables['Variable'].str.startswith('ep')])
 pone_tema_por_prefijo_variable(df_variables,
     'Economía del país (?): no, sí',
         ('ep'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación general, probabilidad en el rango en 12 meses; mensual',
         ('inflacióngeneral_prob12m'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
     'Inflación subyacente, probabilidad en el rango en 12 meses; mensual',
         ('inflaciónsubyacente_prob12m'))
-imprime_temas()
 
 imprime_siguentes_variables(df_variables)
 imprime_array(df_variables.loc[df_variables['Variable'].str.startswith('limcrec')]['Variable'])
 pone_tema_por_prefijo_variable(df_variables,
     'Límite de crecimiento; anual',
         ('limcrec'))
-imprime_temas()
 
-if df_variables[df_variables['Tema']==''].shape[0] != 0:
+if df_variables[df_variables['Tema']==''].shape[0] == 0:
+    print('Se ha asignado tema a todas las variables.')
+else:
     print('Existen variables que no se les ha asignado tema:')
     imprime_siguentes_variables(df_variables)
     raise Exception('Existen variables que no se les ha asignado tema')
-
+  
 imprime_temas()
-if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 35:
+if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 37:
     raise Exception('Cambió el número de temas.')
 
 # Cuántas variables tiene cada tema
@@ -536,7 +522,6 @@ df = df.reindex(columns=['Fecha', 'Año', 'Mes', 'Tema', 'IdVariable', 'Variable
 if df.loc[df['Tema'] == ''].shape[0] > 0:
     raise Exception('No todos los renglones quedaron con tema')
 
-
 # 4.9 Pasar las variables a columnas
 idVariable_unicas=df['IdVariable'].unique()
 df_subset=df.query("IdVariable in @idVariable_unicas")
@@ -547,12 +532,19 @@ df_variables_en_columnas=df_subset.pivot(
 print('DataFrame con variables en columnas:' +
       f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
       f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
-df_variables_en_columnas.describe().T.sample(10, random_state=semilla)
+print('Estadísticas descriptivas por IdVariable')
+print(df_variables_en_columnas.describe().T.to_string())
 
-
-
+print('Coeficiente de variación por Tema')
 xxxxxxxxxxxxxx
 
+temaDescribe=df[['Tema','Expectativa']].pivot(columns='Tema').describe().T
+temaDescribe['cv'] = temaDescribe['std'] / temaDescribe['mean']
+print(temaDescribe[['cv']].sort_values(['cv']).to_string())
+
+https://www.statology.org/coefficient-of-variation-in-python/
+
+https://www.kaggle.com/code/ajay101tiwari/measures-of-dispersion-python-implementation
 
 
 
