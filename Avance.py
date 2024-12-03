@@ -13,6 +13,7 @@
 # py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
 # reticulate::virtualenv_install(packages = c("numpy==1.8.0"))
 # system2(reticulate::py_exe(), c("-m", "pip", "uninstall -y", 'scikit-learn'))
+# otra  py_install("requests==2.32.3")
 
 
 verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
