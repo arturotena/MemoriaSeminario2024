@@ -547,6 +547,18 @@ https://www.statology.org/coefficient-of-variation-in-python/
 https://www.kaggle.com/code/ajay101tiwari/measures-of-dispersion-python-implementation
 
 
+sns.pairplot
+desde el EDA se pueden ver cuales variables pueden ayudar a separar
+la primera grafica de la diagonal muestra que hay inferencia entre las variables (se sobrepoinen): a partir de una variable se puede inferir otra: a ciertos clasificadores les costara trabajo separarlos.
+esto se llama extraccion de caracteristicas o atributos importantes
+
+prueba de separabilidad de clases, para ver que variables ayudan a seperara en clases, esto lo muestra las graficas de la diagonal
+
+
+Dimensionalidad PCA (analisis de componentes principales)
+esto es extraccion de caracteristicas
+
+
 
 ####
 
