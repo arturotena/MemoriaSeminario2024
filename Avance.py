@@ -731,3 +731,13 @@ plt.matshow(df_corrs, f)
 plt.show()
 plt.close()
 print('Son demasiadas variables para una sola gráfica.')
+
+https://www.jmp.com/es_mx/statistics-knowledge-portal/what-is-correlation.html
+
+
+
+entre medias de las expectativas de inflacion y del pib, por ejemplo, a traves del tiempo
+
+o entre las expectativas del analista 1 vs el 2 a traves del tiempo, y asi todos contra todos
+
+calculando p?
