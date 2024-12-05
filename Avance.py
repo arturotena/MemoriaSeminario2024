@@ -123,23 +123,24 @@ print(df.sample(5, random_state=7))
 
 print('Visualización de las columnas:')
 print(list(df.columns.values))
-columnasEsperadas = ['FechaEncuesta', 'NombreAbsolutoCorto', 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo', 'IdAnalista', 'Dato']
-if list(df.columns.values) != columnasEsperadas:
+if list(df.columns.values) !=  ['FechaEncuesta', 'NombreAbsolutoCorto',
+                                'NombreRelativoCorto', 'NombreAbsolutoLargo',
+                                'NombreRelativoLargo', 'IdAnalista', 'Dato']:
     raise Exception('Cambiaron las columnas')
 else:
     print('Las columnas son las esperadas.')
 
-# Las columnas son: 'FechaEncuesta', 'NombreAbsolutoCorto',
-# 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo',
-# 'IdAnalista', 'Dato'
-
 print('Visualización de los tipos de dato de las columnas:')
 print(df.dtypes)
-# Sólo 2 se detectan como numéricas
+if list(df.dtypes.values) != ['O', 'O', 'O', 'O', 'O', 'int64', 'float64']:
+    raise Exception('Cambiaron tipos de las columnas')
+else:
+    print('Los tipos de las columnas son las esperadas.')
+print('Sólo 2 columnas se detectan como numéricas')
 
 print('Visualización de estadísticas descriptivas de las columnas numéricas:')
 print(df.describe())
-# Existe el IdAnalista con valor a cero.
+print('Se observa que existe el IdAnalista con valor a cero.')
 
 print('Visualización de estadísticas descriptivas de la longitud de NombreAbsolutoCorto:')
 print(df['NombreAbsolutoCorto'].apply(lambda s: len(s)).describe())
