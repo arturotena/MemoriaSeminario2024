@@ -41,7 +41,7 @@ print('Directorio actual:', os.getcwd())
 if not os.getcwd().endswith('datasets'):
     raise Exception('No se pudo encontrar el directorio de trabajo')
 
-semilla=1 #'Una semilla fija para reproducibilidad
+semilla=3 #'Una semilla fija para reproducibilidad
 
 
 # ---------------------------------------------------------------------------
@@ -527,14 +527,19 @@ if df.loc[df['Tema'] == ''].shape[0] > 0:
 print(list(df.columns.values))
 df_variables_en_columnas=df.pivot(
     index=['Año', 'Mes', 'Fecha','IdAnalista'],
-    columns=['IdVariable'], #, 'Variable'],
+    columns=['Tema','IdVariable'], #, 'Variable'],
     values='Expectativa')
-print('DataFrame con variables en columnas:' +
-      f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
-      f'\n* Índice:\n{df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
-print('Estadísticas descriptivas por IdVariable')
-print(df_variables_en_columnas.describe().T.to_string())
 
+print('DataFrame con variables en columnas:' +
+      f'\n* Índice: {df_variables_en_columnas.index.names}' +
+      f'\n* Columnas, multíndice: {df_variables_en_columnas.columns[:5].names}')
+
+print('Ejemplo del DataFrame con variables en columnas, transpuesto:')
+print(df_variables_en_columnas.sample(5, random_state=3).T)
+
+print('Estadísticas descriptivas por IdVariable')
+df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
+print(df_estad_descr_por_variable.reset_index().to_string())
 
 
 
