@@ -22,7 +22,7 @@ si se puede entonces ya elegir con alguno otro
 # otra  py_install("requests==2.32.3")
 
 
-verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
+# verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
 
 
 import os
@@ -47,7 +47,7 @@ print('Directorio actual:', os.getcwd())
 if not os.getcwd().endswith('datasets'):
     raise Exception('No se pudo encontrar el directorio de trabajo')
 
-semilla=1 #'Una semilla fija para reproducibilidad
+semilla=3 #'Una semilla fija para reproducibilidad
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pd.set_option('display.max_columns', 8)
-pd.set_option('display.width', 90)
+pd.set_option('display.width', 300)
 #pd.set_option('display.max_colwidth', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
@@ -464,7 +464,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB; trimstral',
+    'Variación porcentual anual del PIB; trimestral',
         ('Variación porcentual anual del PIB, '))
 
 imprime_siguentes_variables(df_variables)
@@ -504,6 +504,10 @@ pone_tema_por_prefijo_variable(df_variables,
     'Límite de crecimiento; anual',
         ('limcrec'))
 
+# Quita las variables temporales que se usaron para el tema.
+df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
+
+
 if df_variables[df_variables['Tema']==''].shape[0] == 0:
     print('Se ha asignado tema a todas las variables.')
 else:
@@ -519,30 +523,103 @@ if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 37:
 print(df_variables.groupby(['Tema'])['Variable'].count())
 print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
 
-# Quita las variables temporales que se usaron para el tema.
-df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
-
 # Asigna el tema al data set.
 df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
-df = df.reindex(columns=['Fecha', 'Año', 'Mes', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
+df = df.reindex(columns=['Año', 'Mes', 'Fecha', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
 if df.loc[df['Tema'] == ''].shape[0] > 0:
     raise Exception('No todos los renglones quedaron con tema')
 
 # 4.9 Pasar las variables a columnas
-idVariable_unicas=df['IdVariable'].unique()
-df_subset=df.query("IdVariable in @idVariable_unicas")
-df_variables_en_columnas=df_subset.pivot(
+print(list(df.columns.values))
+df_variables_en_columnas=df.pivot(
     index=['Año', 'Mes', 'Fecha','IdAnalista'],
-    columns=['IdVariable'], #, 'Variable'],
+    columns=['Tema','IdVariable'], #, 'Variable'],
     values='Expectativa')
-print('DataFrame con variables en columnas:' +
-      f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
-      f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
-print('Estadísticas descriptivas por IdVariable')
-print(df_variables_en_columnas.describe().T.to_string())
 
-print('Coeficiente de variación por Tema')
+print('DataFrame con variables en columnas:' +
+      f'\n* Índice: {df_variables_en_columnas.index.names}' +
+      f'\n* Columnas, multíndice: {df_variables_en_columnas.columns[:5].names}')
+
+print('Ejemplo del DataFrame con variables en columnas, transpuesto:')
+print(df_variables_en_columnas.sample(5, random_state=3).T)
+
+print('Estadísticas descriptivas por IdVariable')
+df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
+print(df_estad_descr_por_variable.reset_index().to_string())
+
+
+xxxxx
+graficando
+
+plt.figure(1)
+plt.subplot(211)
+plt.plot( \
+    df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change())
+plt.subplot(212)
+plt.plot( \
+    df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean())
+plt.show()
+plt.close()
+
+
+plt.plot( \
+    df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change()*10)
+plt.plot( \
+    df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean())
+plt.show()
+plt.close()
+
+
+https://machinelearningmastery.com/time-series-data-stationary-python/
+df.query('Tema=="Valor del tipo de cambio promedio; durante el mes" \
+          and Año==2019') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean().hist()
+plt.show()
+plt.close()
+
+
+
+
+df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+plt.show()
+plt.close()
+
+
+df_temas=df[['Tema']].drop_duplicates()
+df_temas.query('Tema.str.contains("nflaci")').values
+# no se ve cual es del mes
+
+df_variables=df[['Variable']].drop_duplicates()
+df_variables.query('Variable.str.contains("nflaci") and Variable.str.contains("mes") ').values
+# Inflación general para el mes en curso (mes t)
+
+
+df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+plt.show()
+plt.close()
+
+
+
+
+df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+plt.show()
+plt.close()
+
+
+df.groupby
+  
+  .describe()
+
+
 xxxxxxxxxxxxxx
+print('Coeficiente de variación por Tema')
 
 temaDescribe=df[['Tema','Expectativa']].pivot(columns='Tema').describe().T
 temaDescribe['cv'] = temaDescribe['std'] / temaDescribe['mean']
@@ -737,3 +814,13 @@ plt.matshow(df_corrs, f)
 plt.show()
 plt.close()
 print('Son demasiadas variables para una sola gráfica.')
+
+https://www.jmp.com/es_mx/statistics-knowledge-portal/what-is-correlation.html
+
+
+
+entre medias de las expectativas de inflacion y del pib, por ejemplo, a traves del tiempo
+
+o entre las expectativas del analista 1 vs el 2 a traves del tiempo, y asi todos contra todos
+
+calculando p?
