@@ -201,8 +201,8 @@ else:
 
 # 4.6. Limpieza de los datos: busca duplicados sin contar la columna Dato:
 # sólo debería haber un dato de expectativa para cada fecha, variable, analista.
-s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']
-               ].duplicated(keep=False)
+s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
+               .duplicated(keep=False)
 
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,}'
       f' registros duplicados, con la(s) variable(s):\n',
