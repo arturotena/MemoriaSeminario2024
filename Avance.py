@@ -458,7 +458,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB; trimstral',
+    'Variación porcentual anual del PIB; trimestral',
         ('Variación porcentual anual del PIB, '))
 
 imprime_siguentes_variables(df_variables)
@@ -545,9 +545,67 @@ print(df_estad_descr_por_variable.reset_index().to_string())
 xxxxx
 graficando
 
+plt.figure(1)
+plt.subplot(211)
+plt.plot( \
+    df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change())
+plt.subplot(212)
+plt.plot( \
+    df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean())
+plt.show()
+plt.close()
+
+
+plt.plot( \
+    df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change()*10)
+plt.plot( \
+    df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean())
+plt.show()
+plt.close()
+
+
+https://machinelearningmastery.com/time-series-data-stationary-python/
+df.query('Tema=="Valor del tipo de cambio promedio; durante el mes" \
+          and Año==2019') \
+        [['Fecha','Expectativa']].groupby('Fecha').mean().hist()
+plt.show()
+plt.close()
+
+
+
 
 df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
-  [['Fecha','Expectativa']].groupby()
+    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+plt.show()
+plt.close()
+
+
+df_temas=df[['Tema']].drop_duplicates()
+df_temas.query('Tema.str.contains("nflaci")').values
+# no se ve cual es del mes
+
+df_variables=df[['Variable']].drop_duplicates()
+df_variables.query('Variable.str.contains("nflaci") and Variable.str.contains("mes") ').values
+# Inflación general para el mes en curso (mes t)
+
+
+df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+plt.show()
+plt.close()
+
+
+
+
+df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+plt.show()
+plt.close()
+
 
 df.groupby
   
