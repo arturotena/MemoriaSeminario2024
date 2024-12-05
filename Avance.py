@@ -519,25 +519,29 @@ print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
 
 # Asigna el tema al data set.
 df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
-df = df.reindex(columns=['Fecha', 'Año', 'Mes', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
+df = df.reindex(columns=['Año', 'Mes', 'Fecha', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
 if df.loc[df['Tema'] == ''].shape[0] > 0:
     raise Exception('No todos los renglones quedaron con tema')
 
 # 4.9 Pasar las variables a columnas
-idVariable_unicas=df['IdVariable'].unique()
-df_subset=df.query("IdVariable in @idVariable_unicas")
-df_variables_en_columnas=df_subset.pivot(
+print(list(df.columns.values))
+df_variables_en_columnas=df.pivot(
     index=['Año', 'Mes', 'Fecha','IdAnalista'],
     columns=['IdVariable'], #, 'Variable'],
     values='Expectativa')
 print('DataFrame con variables en columnas:' +
       f'\n* Columnas:\n{df_variables_en_columnas.columns[:5].values} ... {df_variables_en_columnas.columns[-5:].values}' +
-      f'\n* Índice {df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
+      f'\n* Índice:\n{df_variables_en_columnas.index.names}:\n{df_variables_en_columnas.index[:5].values} ... {df_variables_en_columnas.index[-5:].values}')
 print('Estadísticas descriptivas por IdVariable')
 print(df_variables_en_columnas.describe().T.to_string())
 
-print('Coeficiente de variación por Tema')
+
+
+
+
+
 xxxxxxxxxxxxxx
+print('Coeficiente de variación por Tema')
 
 temaDescribe=df[['Tema','Expectativa']].pivot(columns='Tema').describe().T
 temaDescribe['cv'] = temaDescribe['std'] / temaDescribe['mean']
