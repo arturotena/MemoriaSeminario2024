@@ -542,7 +542,16 @@ df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['
 print(df_estad_descr_por_variable.reset_index().to_string())
 
 
+xxxxx
+graficando
 
+
+df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+  [['Fecha','Expectativa']].groupby()
+
+df.groupby
+  
+  .describe()
 
 
 xxxxxxxxxxxxxx
