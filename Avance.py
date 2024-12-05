@@ -875,3 +875,6 @@ entre medias de las expectativas de inflacion y del pib, por ejemplo, a traves d
 o entre las expectativas del analista 1 vs el 2 a traves del tiempo, y asi todos contra todos
 
 calculando p?
+
+
+https://realpython.com/numpy-scipy-pandas-correlation-python/
