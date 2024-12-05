@@ -16,7 +16,7 @@
 # otra  py_install("requests==2.32.3")
 
 
-verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
+# verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
 
 
 import os
@@ -51,7 +51,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pd.set_option('display.max_columns', 8)
-pd.set_option('display.width', 90)
+pd.set_option('display.width', 300)
 #pd.set_option('display.max_colwidth', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
@@ -498,6 +498,10 @@ pone_tema_por_prefijo_variable(df_variables,
     'Límite de crecimiento; anual',
         ('limcrec'))
 
+# Quita las variables temporales que se usaron para el tema.
+df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
+
+
 if df_variables[df_variables['Tema']==''].shape[0] == 0:
     print('Se ha asignado tema a todas las variables.')
 else:
@@ -512,9 +516,6 @@ if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 37:
 # Cuántas variables tiene cada tema
 print(df_variables.groupby(['Tema'])['Variable'].count())
 print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
-
-# Quita las variables temporales que se usaron para el tema.
-df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
 
 # Asigna el tema al data set.
 df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
