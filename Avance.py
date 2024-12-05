@@ -587,13 +587,13 @@ plt.close()
 
 https://machinelearningmastery.com/time-series-data-stationary-python/
 df.query('Tema=="Valor del tipo de cambio promedio; durante el mes" \
-          and Año==2019') \
+          and Año==2019 and Mes==8') \
         [['Fecha','Expectativa']].groupby('Fecha').mean().hist()
 plt.show()
 plt.close()
 
 
-
+df.dtypes
 
 df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
     [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
@@ -628,6 +628,39 @@ df.groupby
   
   .describe()
 
+
+import seaborn as sns
+
+_=df.query('Año==2024 and Tema=="Valor del tipo de cambio promedio; durante el mes"')[['Fecha','Expectativa']]
+
+# https://seaborn.pydata.org/tutorial/color_palettes.html
+sns.violinplot(x='Fecha', y='Expectativa', data=_, palette='pastel', inner='quart')
+sns.stripplot(x ='Fecha', y ='Expectativa', data=_, palette='bright', size=4)  
+plt.show()
+plt.close()
+
+sns.histplot(data=_, x='Fecha', y='Expectativa')
+plt.show()
+plt.close()
+
+# https://seaborn.pydata.org/tutorial/distributions.html
+sns.displot(_, y='Expectativa', hue="Fecha", kind="kde", fill=True)
+plt.show()
+plt.close()
+
+
+penguins = sns.load_dataset("penguins")
+sns.displot(penguins, x="flipper_length_mm", kind="kde", bw_adjust=.25)
+plt.show()
+plt.close()
+
+
+mu, sigma = 0, 0.1 # mean and standard deviation
+_=np.random.normal(mu, sigma, 1000)
+sns.violinplot(data=_, palette='Pastel1', inner='stick')
+sns.swarmplot(data=_, size=5, color='red')
+plt.show()
+plt.close()
 
 xxxxxxxxxxxxxx
 print('Coeficiente de variación por Tema')
