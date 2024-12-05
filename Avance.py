@@ -4,19 +4,19 @@
 # https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
 
 
-primero probar con la maquina de soporte de vectores, 
-si no se puede con eso regresarse al EDA
-si se puede entonces ya elegir con alguno otro
-
-
-primero probar con la maquina de soporte de vectores, 
-si no se puede con eso regresarse al EDA
-si se puede entonces ya elegir con alguno otro
-
-
-
-reduccion de caracteristicas: entrenar el modelo con menos columnas
-elegir las columnas con mayor correlacion
+# primero probar con la maquina de soporte de vectores, 
+# si no se puede con eso regresarse al EDA
+# si se puede entonces ya elegir con alguno otro
+# 
+# 
+# primero probar con la maquina de soporte de vectores, 
+# si no se puede con eso regresarse al EDA
+# si se puede entonces ya elegir con alguno otro
+# 
+# 
+# 
+# reduccion de caracteristicas: entrenar el modelo con menos columnas
+# elegir las columnas con mayor correlacion
 
 
 # https://rstudio.github.io/reticulate/articles/r_markdown.html
