@@ -58,7 +58,7 @@ print('Directorio actual:', os.getcwd())
 if not os.getcwd().endswith('datasets'):
     raise Exception('No se pudo encontrar el directorio de trabajo')
 
-semilla=3 #'Una semilla fija para reproducibilidad
+semilla=1 #'Una semilla fija para reproducibilidad
 
 
 # ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pd.set_option('display.max_columns', 8)
-pd.set_option('display.width', 300)
+pd.set_option('display.width', 150)
 #pd.set_option('display.max_colwidth', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
@@ -119,10 +119,16 @@ if rows > 1600000: raise Exception(f"Se detectaron más registros que antes.")
 print('Visualización de los primeros y últimos 3 renglones, y 5 aleatorios:')
 print(df.head(3))
 print(df.tail(3))
-print(df.sample(5, random_state=semilla))
+print(df.sample(5, random_state=7))
 
 print('Visualización de las columnas:')
-print(df.columns)
+print(list(df.columns.values))
+columnasEsperadas = ['FechaEncuesta', 'NombreAbsolutoCorto', 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo', 'IdAnalista', 'Dato']
+if list(df.columns.values) != columnasEsperadas:
+    raise Exception('Cambiaron las columnas')
+else:
+    print('Las columnas son las esperadas.')
+
 # Las columnas son: 'FechaEncuesta', 'NombreAbsolutoCorto',
 # 'NombreRelativoCorto', 'NombreAbsolutoLargo', 'NombreRelativoLargo',
 # 'IdAnalista', 'Dato'
