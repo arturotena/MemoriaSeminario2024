@@ -51,8 +51,15 @@ try:
 except FileNotFoundError as e:
     print('No estamos en Mac')
 
-os.chdir('MemoriaSeminario2024')
-os.chdir('datasets')
+try:
+    os.chdir('MemoriaSeminario2024')
+except:
+    pass
+
+try:
+    os.chdir('datasets')
+except:
+    pass
 
 print('Directorio actual:', os.getcwd())
 if not os.getcwd().endswith('datasets'):
@@ -264,6 +271,9 @@ df_variables=df_variables.sort_values(['Variable'])
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
+df_variables['Tema2']=''
+df_variables['Tema3']=''
+df_variables['Unidades']=''
 print(df_variables.head())
 
 def imprime_array(s, n=-1, width=-1):
@@ -284,50 +294,73 @@ def imprime_siguentes_variables(df_variables, n=-1, width=-1):
         'Variable'].sort_values().values, n, width)
 
 def imprime_temas():
-    #df_variables['Tema'].drop_duplicates().values
     imprime_array(
         df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
+def imprime_temas2():
+    imprime_array(
+        df_variables['Tema2'].drop_duplicates(keep='first').sort_values().values)
+def imprime_temas3():
+    imprime_array(
+        df_variables['Tema3'].drop_duplicates(keep='first').sort_values().values)
+def imprime_unidades():
+    imprime_array(
+        df_variables['Unidades'].drop_duplicates(keep='first').sort_values().values)
 
-def pone_tema_por_prefijo_variable(df_variables, tema, prefijos:tuple):
-    condicion = df_variables['Variable'].str.startswith(prefijos)
-    m=df_variables.loc[condicion, ['Variable']].drop_duplicates(keep='first').shape[0]
+def pone_tema_por_prefijo_variable(df_variables, temas, prefijos:tuple):
+    lst_temas=[un_tema.strip() for un_tema in temas.split(';')]
+    if len(lst_temas) < 3: lst_temas.append('')
+    tmp=lst_temas[0].split(':')
+    tema=tmp[0]
+    unidades=tmp[1]
+    tema2=lst_temas[1]
+    tema3=lst_temas[2]
+    condicion = (df_variables['Variable'].str.startswith(prefijos)) \
+                & (df_variables['Tema'] == '')
     df_variables.loc[condicion, ['Tema']] = tema
-    print(f'Tema asignado para {m} variables distintas')
+    df_variables.loc[condicion, ['Tema2']] = tema2
+    df_variables.loc[condicion, ['Tema3']] = tema3
+    df_variables.loc[condicion, ['Unidades']] = unidades
+    cuenta_variables = df_variables.loc[condicion, ['Variable']] \
+                            .drop_duplicates(keep='first').shape[0]
+    print(f'Tema asignado para {cuenta_variables} variables distintas')
 
 imprime_temas()
+imprime_temas2()
+imprime_temas3()
+imprime_unidades()
 # En este momento no hay ninguno.
 
 # Observando la salida, se decidirá el tema de cada grupo de variables.
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Balance económico del sector público; al cierre del año; anual',
+    'Balance económico del sector público: _desconocida; al cierre del periodo; anual',
         ('Balance económico del sector público'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Balanza Comercial; saldo anual al cierre del año; anual',
+    'Balanza Comercial: _desconocida; al cierre del periodo; anual',
         ('Balanza'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Competencia y Crecimiento; nivel',
+    'Competencia y Crecimiento: nivel; _desconocido; _desconocido',
         ('Compete'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Cuenta Corriente; saldo anual al cierre del año; anual',
+    'Cuenta Corriente: _desconocida; al cierre del periodo; anual',
         ('Cuenta '))
 
 imprime_siguentes_variables(df_variables)
 # Son los diferentes tipos de inflación:
-#     Inflación general al cierre; al cierre del año; anual
-#     Inflación general para dentro de; ; mensual
+#     Inflación general al cierre; al cierre del periodo; anual
+#     Inflación general para dentro de; _desconocido; mensual
 #         Inflación general para el mes en curso
 #         Inflación general para el siguiente mes
 #     Inflación general para los próximos; a largo plazo
-#     Inflación subyacente al cierre; al cierre del año; anual
-#     Inflación subyacente para dentro de; ; mensual
+#     Inflación subyacente al cierre; al cierre del periodo; anual
+#     Inflación subyacente para dentro de; _desconocido; mensual
 #         Inflación subyacente para el mes en curso
 #         Inflación subyacente para el siguiente mes
 #     Inflacióngeneral_12m
@@ -335,36 +368,47 @@ imprime_siguentes_variables(df_variables)
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general al cierre; al cierre del año; anual',
+    'Inflación general al cierre: porcentaje; al cierre del periodo; anual',
         ('Inflación general al cierre '))
 
 imprime_siguentes_variables(df_variables, n=14)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general para dentro de; ; mensual',
+    'Inflación general: porcentaje; al cierre del periodo; mensual',
         ('Inflación general para dentro de ',
          'Inflación general para el mes en curso',
          'Inflación general para el siguiente mes'))
 
 imprime_siguentes_variables(df_variables, n=3)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general para los próximos; a largo plazo',
+    'Inflación general: porcentaje; al cierre del periodo; a largo plazo',
         ('Inflación general para los próximos'))
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente al cierre; al cierre del año; anual',
-        ('Inflación subyacente al cierre '))
+    'Inflación subyacente: porcentaje de probabilidad; al cierre del periodo; anual',
+        ('Inflación subyacente al cierre del año en curso (año t), probabilidad de que se encuentre en rango',
+         'Inflación subyacente al cierre del siguiente año (año t+1), probabilidad de que se encuentre en rango',
+         'Inflación subyacente al cierre dentro de dos años (año t+2), probabilidad de que se encuentre en rango',
+         'Inflación subyacente al cierre dentro de tres años (año t+3), probabilidad de que se encuentre en rango'))
+
+imprime_siguentes_variables(df_variables, n=5)
+pone_tema_por_prefijo_variable(df_variables,
+    'Inflación subyacente: porcentaje; al cierre del periodo; anual',
+        ('Inflación subyacente al cierre del año en curso (año t)',
+         'Inflación subyacente al cierre del siguiente año (año t+1)',
+         'Inflación subyacente al cierre dentro de dos años (año t+2)',
+         'Inflación subyacente al cierre dentro de tres años (año t+3)'))
 
 imprime_siguentes_variables(df_variables, n=14)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente para dentro de; ; mensual',
+    'Inflación subyacente: porcentaje; al cierre del periodo; mensual',
         ('Inflación subyacente para dentro de ',
          'Inflación subyacente para el mes en curso',
          'Inflación subyacente para el siguiente mes'))
 
 imprime_siguentes_variables(df_variables, n=3)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente para los próximos; a largo plazo',
+    'Inflación subyacente: porcentaje; al cierre del periodo; a largo plazo',
         ('Inflación subyacente para los próximos'))
 
 imprime_siguentes_variables(df_variables)
@@ -373,106 +417,106 @@ print(df_variables.query('PrimerasLetras == "Inflaci" and Tema==""'))
 # También se consultó: https://www.banxico.org.mx/SieInternet/consultarDirectori
 # oInternetAction.do?sector=24&accion=consultarCuadro&idCuadro=CR155&locale=es
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general para los próximos 12 meses',
+    'Inflación general para los próximos 12 meses: porcentaje; _desconocido; a largo plazo',
         ('Inflacióngeneral_12m_'))
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente para los próximos 12 meses',
+    'Inflación subyacente para los próximos 12 meses: porcentaje; _desconocido; a largo plazo',
         ('Inflaciónsubyacente_12m_'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Intensidad Competencia; nivel',
+    'Intensidad Competencia: nivel; _desconocido; _desconocido',
         ('Intensi'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inversión Extranjera Directa; monto al cierre; anual',
+    'Inversión Extranjera Directa: _desconocida; al cierre del periodo; anual',
         ('Inversi'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Nivel de la tasa de fondeo interbancaria; al cierre; trimestral',
+    'Tasa de fondeo interbancaria: porcentaje; al cierre del periodo; trimestral',
         ('Nivel de la tasa de fondeo interbancaria al cierre'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Nivel de la tasa de interés de los Bonos M a 10 años; al cierre; anual',
+    'Tasa de interés de los Bonos M a 10 años: porcentaje; al cierre del periodo; anual',
         ('Nivel de la tasa de interés de los Bonos M a 10 años al cierre'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Nivel de la tasa de interés del cete a 28 días; al cierre; anual',
+    'Tasa de interés del cete a 28 días: porcentaje; al cierre del periodo; anual',
         ('Nivel de la tasa de interés del cete a 28 días al cierre'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Obstáculos Enfrentan Empresarios',
+    'Obstáculos Enfrentan Empresarios: nivel; _desconocido; _desconocido',
         ('Obstáculos Enfrentan Empresarios'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Probabilidad de reducción en el PIB trimestral; trimestral',
+    'Probabilidad de reducción en el PIB trimestral: porcentaje; _desconocido; trimestral',
         ('Probabilidad de reducción en el PIB trimestral'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Saldo de requerimientos financieros del sector público; al cierre; anual',
+    'Requerimientos financieros del sector público: _desconocida; al cierre del periodo; anual',
         ('Saldo de requerimientos financieros del sector público al cierre del'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Sectores Problemas Competencia',
+    'Sectores Problemas Competencia: nivel; _desconocido; _desconocido',
         ('Sectores Problemas Competencia'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Tasa nacional de desocupación; al cierre; anual',
+    'Tasa nacional de desocupación: porcentaje; al cierre del periodo; anual',
         ('Tasa nacional de desocupación al cierre'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Tasa nacional de desocupación promedio; anual',
+    'Tasa nacional de desocupación promedio: porcentaje; al cierre del periodo; anual',
         ('Tasa nacional de desocupación promedio del '))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Valor del tipo de cambio al cierre del año en curso',
+    'Valor del tipo de cambio al cierre del año en curso: tipo de cambio; al cierre del periodo; anual',
         ('Valor del tipo de cambio al cierre del año en curso'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Valor del tipo de cambio promedio; durante el mes',
+    'Valor del tipo de cambio promedio: tipo de cambio; durante el periodo; mensual',
         ('Valor del tipo de cambio promedio durante el mes'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación desestacionalizada del PIB; trimestral',
+    'Variación desestacionalizada del PIB: porcentaje; al cierre del periodo; trimestral',
         ('Variación desestacionalizada del PIB'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación en el número de trabajadores asegurados',
+    'Variación en el número de trabajadores asegurados: número de personas; al cierre del periodo; _desconocido',
         ('Variación en el número de trabajadores asegurados'))
 
 imprime_siguentes_variables(df_variables,5)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB de Estados Unidos; anual',
+    'Variación porcentual anual del PIB de Estados Unidos: porcentaje; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB de Estados Unidos'))
 
 imprime_siguentes_variables(df_variables, width=200)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB, probabilidad en el rango; anual',
+    'Variación porcentual anual del PIB, probabilidad en el rango: porcentaje de probabilidad; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB en '))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB para los próximos 10 años; a largo plazo',
+    'Variación porcentual anual del PIB para los próximos 10 años: porcentaje; al cierre del periodo; a largo plazo',
         ('Variación porcentual anual del PIB para los próximos 10 años'))
 
 imprime_siguentes_variables(df_variables, width=150)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB; anual',
+    'Variación porcentual anual del PIB: porcentaje; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB, año anterior al correspondiente del levantamiento de la Encuesta (año t-1)',
          'Variación porcentual anual del PIB, año en curso (año t)',
          'Variación porcentual anual del PIB, siguiente año (año t+1)',
@@ -482,49 +526,45 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB; trimestral',
+    'Variación porcentual anual del PIB: porcentaje; al cierre del periodo; trimestral',
         ('Variación porcentual anual del PIB, '))
 
 imprime_siguentes_variables(df_variables)
 print(df_variables.loc[df_variables['IdVariable'].str.startswith('coyun')])
 print(df_variables.loc[df_variables['Variable'].str.startswith('cemp')])
 pone_tema_por_prefijo_variable(df_variables,
-    'Coyuntura empleo (?); bueno, malo, no seguro',
+    'Coyuntura empleo (?): nivel (bueno, malo, no seguro); _desconocido; _desconocido',
         ('cemp'))
 
 imprime_siguentes_variables(df_variables)
 print(df_variables.loc[df_variables['IdVariable'].str.startswith('clima')])
 print(df_variables.loc[df_variables['Variable'].str.startswith('cneg')])
 pone_tema_por_prefijo_variable(df_variables,
-    'Cambio climático (?): empeorará, mejorará, permanecerá igual',
+    'Cambio climático (?): nivel (empeorará, mejorará, permanecerá igual); _desconocido; _desconocido',
         ('cneg'))
 
 imprime_siguentes_variables(df_variables)
 print(df_variables.loc[df_variables['IdVariable'].str.startswith('ecopai')])
 print(df_variables.loc[df_variables['Variable'].str.startswith('ep')])
 pone_tema_por_prefijo_variable(df_variables,
-    'Economía del país (?): no, sí',
+    'Economía del país (?): nivel (no, sí); _desconocido; _desconocido',
         ('ep'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general, probabilidad en el rango en 12 meses; mensual',
+    'Inflación general, probabilidad en el rango en 12 meses: porcentaje de probabilidad; al cierre del periodo; a largo plazo',
         ('inflacióngeneral_prob12m'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente, probabilidad en el rango en 12 meses; mensual',
+    'Inflación subyacente, probabilidad en el rango en 12 meses: porcentaje de probabilidad; al cierre del periodo; a largo plazo',
         ('inflaciónsubyacente_prob12m'))
 
 imprime_siguentes_variables(df_variables)
 imprime_array(df_variables.loc[df_variables['Variable'].str.startswith('limcrec')]['Variable'])
 pone_tema_por_prefijo_variable(df_variables,
-    'Límite de crecimiento; anual',
+    'Límite de crecimiento: nivel; _desconocido; anual',
         ('limcrec'))
-
-# Quita las variables temporales que se usaron para el tema.
-df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
-
 
 if df_variables[df_variables['Tema']==''].shape[0] == 0:
     print('Se ha asignado tema a todas las variables.')
@@ -532,359 +572,373 @@ else:
     print('Existen variables que no se les ha asignado tema:')
     imprime_siguentes_variables(df_variables)
     raise Exception('Existen variables que no se les ha asignado tema')
-  
-imprime_temas()
-if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 37:
+
+# Quita las variables temporales que se usaron para el tema.
+df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
+
+if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 34:
     raise Exception('Cambió el número de temas.')
 
-# Cuántas variables tiene cada tema
-print(df_variables.groupby(['Tema'])['Variable'].count())
-print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
+print('Temas:')
+imprime_temas()
+print('Cifras:')
+imprime_temas2()
+print('Horizontes:')
+imprime_temas3()
+print('Unidades:')
+imprime_unidades()
 
-# Asigna el tema al data set.
-df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
-df = df.reindex(columns=['Año', 'Mes', 'Fecha', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
-if df.loc[df['Tema'] == ''].shape[0] > 0:
-    raise Exception('No todos los renglones quedaron con tema')
 
-# 4.9 Pasar las variables a columnas
-print(list(df.columns.values))
-df_variables_en_columnas=df.pivot(
-    index=['Año', 'Mes', 'Fecha','IdAnalista'],
-    columns=['Tema','IdVariable'], #, 'Variable'],
-    values='Expectativa')
 
-print('DataFrame con variables en columnas:' +
-      f'\n* Índice: {df_variables_en_columnas.index.names}' +
-      f'\n* Columnas, multíndice: {df_variables_en_columnas.columns[:5].names}')
-
-print('Ejemplo del DataFrame con variables en columnas, transpuesto:')
-print(df_variables_en_columnas.sample(5, random_state=3).T)
-
-print('Estadísticas descriptivas por IdVariable')
-df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
-print(df_estad_descr_por_variable.reset_index().to_string())
-
-
-xxxxx
-graficando
-
-plt.figure(1)
-plt.subplot(211)
-plt.plot( \
-    df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
-        [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change())
-plt.subplot(212)
-plt.plot( \
-    df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
-        [['Fecha','Expectativa']].groupby('Fecha').mean())
-plt.show()
-plt.close()
-
-
-plt.plot( \
-    df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
-        [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change()*10)
-plt.plot( \
-    df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
-        [['Fecha','Expectativa']].groupby('Fecha').mean())
-plt.show()
-plt.close()
-
-
-https://machinelearningmastery.com/time-series-data-stationary-python/
-df.query('Tema=="Valor del tipo de cambio promedio; durante el mes" \
-          and Año==2019 and Mes==8') \
-        [['Fecha','Expectativa']].groupby('Fecha').mean().hist()
-plt.show()
-plt.close()
-
-
-df.dtypes
-
-df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
-    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
-plt.show()
-plt.close()
-
-
-df_temas=df[['Tema']].drop_duplicates()
-df_temas.query('Tema.str.contains("nflaci")').values
-# no se ve cual es del mes
-
-df_variables=df[['Variable']].drop_duplicates()
-df_variables.query('Variable.str.contains("nflaci") and Variable.str.contains("mes") ').values
-# Inflación general para el mes en curso (mes t)
-
-
-df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
-    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
-plt.show()
-plt.close()
-
-
-
-
-df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
-    [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
-plt.show()
-plt.close()
-
-
-df.groupby
-  
-  .describe()
-
-
-import seaborn as sns
-
-_=df.query('Año==2024 and Tema=="Valor del tipo de cambio promedio; durante el mes"')[['Fecha','Expectativa']]
-
-# https://seaborn.pydata.org/tutorial/color_palettes.html
-sns.violinplot(x='Fecha', y='Expectativa', data=_, palette='pastel', inner='quart')
-sns.stripplot(x ='Fecha', y ='Expectativa', data=_, palette='bright', size=4)  
-plt.show()
-plt.close()
-
-sns.histplot(data=_, x='Fecha', y='Expectativa')
-plt.show()
-plt.close()
-
-# https://seaborn.pydata.org/tutorial/distributions.html
-sns.displot(_, y='Expectativa', hue="Fecha", kind="kde", fill=True)
-plt.show()
-plt.close()
-
-
-penguins = sns.load_dataset("penguins")
-sns.displot(penguins, x="flipper_length_mm", kind="kde", bw_adjust=.25)
-plt.show()
-plt.close()
-
-
-mu, sigma = 0, 0.1 # mean and standard deviation
-_=np.random.normal(mu, sigma, 1000)
-sns.violinplot(data=_, palette='Pastel1', inner='stick')
-sns.swarmplot(data=_, size=5, color='red')
-plt.show()
-plt.close()
-
-xxxxxxxxxxxxxx
-print('Coeficiente de variación por Tema')
-
-temaDescribe=df[['Tema','Expectativa']].pivot(columns='Tema').describe().T
-temaDescribe['cv'] = temaDescribe['std'] / temaDescribe['mean']
-print(temaDescribe[['cv']].sort_values(['cv']).to_string())
-
-https://www.statology.org/coefficient-of-variation-in-python/
-
-https://www.kaggle.com/code/ajay101tiwari/measures-of-dispersion-python-implementation
-
-
-sns.pairplot
-desde el EDA se pueden ver cuales variables pueden ayudar a separar
-la primera grafica de la diagonal muestra que hay inferencia entre las variables (se sobrepoinen): a partir de una variable se puede inferir otra: a ciertos clasificadores les costara trabajo separarlos.
-esto se llama extraccion de caracteristicas o atributos importantes
-
-prueba de separabilidad de clases, para ver que variables ayudan a seperara en clases, esto lo muestra las graficas de la diagonal
-
-
-Dimensionalidad PCA (analisis de componentes principales)
-esto es extraccion de caracteristicas
-
-
-
-####
-
-
-
-
-
-for column in df:
-    plt.figure()
-    df.boxplot([column])
-df.boxplot(['Expectativa'])
-df[['IdAnalista']].drop_duplicates().boxplot(['IdAnalista'])
-plt.show()
-plt.close()
-df[['IdAnalista']].drop_duplicates().describe()
-type()
-xxx
-# boxplot y violin
-# metodo 1
-import seaborn as sns
-df_plot=df[['IdAnalista']].drop_duplicates()
-sns.violinplot(data=df_plot, inner=None, color='white', linewidth=1)
-sns.boxplot(data=df_plot, width=0.3, color='orange')
-# metodo 2
-#plt.boxplot(df[['IdAnalista']].drop_duplicates().values)
-df[['IdAnalista']].drop_duplicates().boxplot(['IdAnalista'])
-plt.violinplot(df[['IdAnalista']].drop_duplicates().values)
-# muestra
-plt.show()
-plt.close()
-
-
-
-bonost	Nivel de la tasa de interés del cete a 28 días
-bonost1	Nivel de la tasa de interés del cete a 28 días
-bonost2	Nivel de la tasa de interés del cete a 28 días
-bonost3	Nivel de la tasa de interés del cete a 28 días
-cetest	Nivel de la tasa de interés del cete a 28 días
-cetest1	Nivel de la tasa de interés del cete a 28 días
-cetest2	Nivel de la tasa de interés del cete a 28 días
-cetest3	Nivel de la tasa de interés del cete a 28 días
-fondeot	Nivel de la tasa de interés del cete a 28 días
-fondeotmas1	Nivel de la tasa de interés del cete a 28 días
-fondeotmas2	Nivel de la tasa de interés del cete a 28 días
-fondeotmas3	Nivel de la tasa de interés del cete a 28 días
-fondeotmas4	Nivel de la tasa de interés del cete a 28 días
-fondeotmas5	Nivel de la tasa de interés del cete a 28 días
-fondeotmas6	Nivel de la tasa de interés del cete a 28 días
-fondeotmas7	Nivel de la tasa de interés del cete a 28 días
-fondeotmas8	Nivel de la tasa de interés del cete a 28 días
-fondeotmas9	Nivel de la tasa de interés del cete a 28 días
-
-Inflación general al cierre
-
-
-
-xxx
-
-
-df_variables.query('Tema == "Nivel de la tasa de interés del cete a 28 días; al cierre; anual"')
-esto esta maaal se ve en los idvariable
-
-x['PrimerasLetrasIdVariable']=x['IdVariable'].apply(lambda s: s[:10])
-....
-
-xxx
-
-
-
-xxx
-# Ver si corresponden las primeras letras de IdVariable con Tema
-xxx ver si el idvariable no corresponde entonces tal vez se eligio mal el tema
-xxx o hay incongruencia en esas variables y habria que quitarlas
-df_variables[['IdVariable','Tema']].sort_values(['Tema'], ascending=False)
-
-
-df_variables.loc[df_variables['Tema']==''].shape
-if df_variables.loc[df_variables['Tema']==''].shape[0] > 0:
-    raise Exception('Aún hay variables sin tema.')
-
-xxx
-
-
-
-#### df=df.merge(df_variables, how='left', on=['IdVariable','Variable'])
-
-
-# **====== PENDIENTE:**
 # 
-# Convertir variables categóricas (si/no; mucho/poco/nada).
+# # Cuántas variables tiene cada tema
+# print(df_variables.groupby(['Tema'])['Variable'].count())
+# print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
 # 
-# 5. Estadísticas descriptivas
-# 6. Visualización
-# 7. Análisis de variables
-# univariate, bivariate, or multivariate
-# 8. Análisis de series de tiempo
-# When we analyze time series data, we can typically uncover patterns or trends that repeat over time and present a temporal seasonality. Key components of time series data include trends, seasonal variations, cyclical variations, and irregular variations or noise.}
+# # Asigna el tema al data set.
+# df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
+# df = df.reindex(columns=['Año', 'Mes', 'Fecha', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
+# if df.loc[df['Tema'] == ''].shape[0] > 0:
+#     raise Exception('No todos los renglones quedaron con tema')
 # 
-
-
-# --------------------------------------------------------------------------
-# Estadísticas descriptivas
-
-# Análisis de número de respuestas
-respuestasPorAño = df.groupby(by=["Año"])["Expectativa"].count()
-respuestasPorAño.name = 'Número de respuestas por año'
-respuestasPorAño.index.name = 'Año de la Enuesta'
-respuestasPorAño.to_frame().plot.bar(
-    title='Número de respuestas por año de la Encuesta (2024 año en curso)',
-    rot=70,
-    figsize=(10, 5),
-    color='darkblue')
-plt.show()
-plt.close()
-analistasDistintosPorAño = df.groupby(by=["Año"])["IdAnalista"].unique().apply(len)
-analistasDistintosPorAño.name = 'Número de analistas distintos'
-analistasDistintosPorAño.index.name = 'Año de la Enuesta'
-analistasDistintosPorAño.to_frame().plot.bar(
-    title='Número de analistas distintos por año de la Encuesta (2024 año en curso)',
-    rot=70,
-    figsize=(10, 5),
-    color ='darkred')
-plt.show()
-plt.close()
-analistasDistintosPorAño = df.groupby(by=["Año"])["Variable"].unique().apply(len)
-analistasDistintosPorAño.name = 'Número de preguntas distintas'
-analistasDistintosPorAño.index.name = 'Año de la Enuesta'
-analistasDistintosPorAño.to_frame().plot.bar(
-    title='Número de preguntas por año de la Encuesta (2024 año en curso)',
-    rot=70,
-    figsize=(10, 5),
-    color ='g')
-plt.show()
-plt.close()
-# **Por tanto, se concluye que el aumento de respuestas desde 2013 se podría explicar por el aumento de preguntas más que por el aumento de analistas.**
-
-# Análisis de la Expectativa de Inflación General Anual
-inflacion_general_anual=df.query('IdVariable=="infgent"')
-inflacion_general_anual = inflacion_general_anual[['Año','Expectativa']] # Crea dataframe con sólo estas dos columnas
-print(inflacion_general_anual)
-x=inflacion_general_anual.plot.scatter(
-    x='Año', y='Expectativa',
-    rot=70,
-    figsize=(10, 5),
-    color='purple', alpha=0.2)
-plt.show()
-plt.close()
-# Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
-axes = inflacion_general_anual.boxplot(
-    column='Expectativa', by='Año',
-    ylabel='Porcentaje', xlabel='Año de la encuesta',
-    rot=70,
-    figsize=(10, 5),
-    color='purple')
-axes.set_title('Expectativa de Inflación General al cierre del año de la encuesta')
-plt.show()
-plt.close()
-
-
-# --------------------------------------------------------------------------
-# Correlaciones
-
-# Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
-df_corrs=df_variables_en_columnas.corr()
-print(f'Son {df_variables_en_columnas.columns.size} variables.')
-df_corrs.sample(4, random_state=semilla)
-
-f = plt.figure(figsize=(10, 10))
-plt.matshow(df_corrs, f)
-plt.show()
-plt.close()
-print('Son demasiadas variables para una sola gráfica.')
-
-https://www.jmp.com/es_mx/statistics-knowledge-portal/what-is-correlation.html
-
-
-#df['Tema'].drop_duplicates()
-#df[df.Tema.str.contains('PIB')].groupby(['Tema'])['Expectativa'].mean()
-#df[df.Tema.str.contains('Cuenta')].groupby(['Tema'])['Expectativa'].mean()
-_1=df[df.Tema=='Variación porcentual anual del PIB; trimestral'] \
-    [['Fecha','Expectativa']].groupby(['Fecha']).mean()
-_2=df[df.Tema=='Cuenta Corriente; saldo anual al cierre del año; anual'] \
-    [['Fecha','Expectativa']].groupby(['Fecha']).mean()
-
-
-
-
-entre medias de las expectativas de inflacion y del pib, por ejemplo, a traves del tiempo
-
-o entre las expectativas del analista 1 vs el 2 a traves del tiempo, y asi todos contra todos
-
-calculando p?
-
-
-https://realpython.com/numpy-scipy-pandas-correlation-python/
+# # 4.9 Pasar las variables a columnas
+# print(list(df.columns.values))
+# df_variables_en_columnas=df.pivot(
+#     index=['Año', 'Mes', 'Fecha','IdAnalista'],
+#     columns=['Tema','IdVariable'], #, 'Variable'],
+#     values='Expectativa')
+# 
+# print('DataFrame con variables en columnas:' +
+#       f'\n* Índice: {df_variables_en_columnas.index.names}' +
+#       f'\n* Columnas, multíndice: {df_variables_en_columnas.columns[:5].names}')
+# 
+# print('Ejemplo del DataFrame con variables en columnas, transpuesto:')
+# print(df_variables_en_columnas.sample(5, random_state=3).T)
+# 
+# print('Estadísticas descriptivas por IdVariable')
+# df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
+# print(df_estad_descr_por_variable.reset_index().to_string())
+# 
+# 
+# xxxxx
+# graficando
+# 
+# plt.figure(1)
+# plt.subplot(211)
+# plt.plot( \
+#     df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+#         [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change())
+# plt.subplot(212)
+# plt.plot( \
+#     df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+#         [['Fecha','Expectativa']].groupby('Fecha').mean())
+# plt.show()
+# plt.close()
+# 
+# 
+# plt.plot( \
+#     df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+#         [['Fecha','Expectativa']].groupby('Fecha').mean().pct_change()*10)
+# plt.plot( \
+#     df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+#         [['Fecha','Expectativa']].groupby('Fecha').mean())
+# plt.show()
+# plt.close()
+# 
+# 
+# https://machinelearningmastery.com/time-series-data-stationary-python/
+# df.query('Tema=="Valor del tipo de cambio promedio; durante el mes" \
+#           and Año==2019 and Mes==8') \
+#         [['Fecha','Expectativa']].groupby('Fecha').mean().hist()
+# plt.show()
+# plt.close()
+# 
+# 
+# df.dtypes
+# 
+# df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+#     [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+# plt.show()
+# plt.close()
+# 
+# 
+# df_temas=df[['Tema']].drop_duplicates()
+# df_temas.query('Tema.str.contains("nflaci")').values
+# # no se ve cual es del mes
+# 
+# df_variables=df[['Variable']].drop_duplicates()
+# df_variables.query('Variable.str.contains("nflaci") and Variable.str.contains("mes") ').values
+# # Inflación general para el mes en curso (mes t)
+# 
+# 
+# df.query('Variable=="Inflación general para el mes en curso (mes t)"') \
+#     [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+# plt.show()
+# plt.close()
+# 
+# 
+# 
+# 
+# df.query('Tema=="Valor del tipo de cambio promedio; durante el mes"') \
+#     [['Fecha','Expectativa']].groupby('Fecha').mean().plot()
+# plt.show()
+# plt.close()
+# 
+# 
+# df.groupby
+#   
+#   .describe()
+# 
+# 
+# import seaborn as sns
+# 
+# _=df.query('Año==2024 and Tema=="Valor del tipo de cambio promedio; durante el mes"')[['Fecha','Expectativa']]
+# 
+# # https://seaborn.pydata.org/tutorial/color_palettes.html
+# sns.violinplot(x='Fecha', y='Expectativa', data=_, palette='pastel', inner='quart')
+# sns.stripplot(x ='Fecha', y ='Expectativa', data=_, palette='bright', size=4)  
+# plt.show()
+# plt.close()
+# 
+# sns.histplot(data=_, x='Fecha', y='Expectativa')
+# plt.show()
+# plt.close()
+# 
+# # https://seaborn.pydata.org/tutorial/distributions.html
+# sns.displot(_, y='Expectativa', hue="Fecha", kind="kde", fill=True)
+# plt.show()
+# plt.close()
+# 
+# 
+# penguins = sns.load_dataset("penguins")
+# sns.displot(penguins, x="flipper_length_mm", kind="kde", bw_adjust=.25)
+# plt.show()
+# plt.close()
+# 
+# 
+# mu, sigma = 0, 0.1 # mean and standard deviation
+# _=np.random.normal(mu, sigma, 1000)
+# sns.violinplot(data=_, palette='Pastel1', inner='stick')
+# sns.swarmplot(data=_, size=5, color='red')
+# plt.show()
+# plt.close()
+# 
+# xxxxxxxxxxxxxx
+# print('Coeficiente de variación por Tema')
+# 
+# temaDescribe=df[['Tema','Expectativa']].pivot(columns='Tema').describe().T
+# temaDescribe['cv'] = temaDescribe['std'] / temaDescribe['mean']
+# print(temaDescribe[['cv']].sort_values(['cv']).to_string())
+# 
+# https://www.statology.org/coefficient-of-variation-in-python/
+# 
+# https://www.kaggle.com/code/ajay101tiwari/measures-of-dispersion-python-implementation
+# 
+# 
+# sns.pairplot
+# desde el EDA se pueden ver cuales variables pueden ayudar a separar
+# la primera grafica de la diagonal muestra que hay inferencia entre las variables (se sobrepoinen): a partir de una variable se puede inferir otra: a ciertos clasificadores les costara trabajo separarlos.
+# esto se llama extraccion de caracteristicas o atributos importantes
+# 
+# prueba de separabilidad de clases, para ver que variables ayudan a seperara en clases, esto lo muestra las graficas de la diagonal
+# 
+# 
+# Dimensionalidad PCA (analisis de componentes principales)
+# esto es extraccion de caracteristicas
+# 
+# 
+# 
+# ####
+# 
+# 
+# 
+# 
+# 
+# for column in df:
+#     plt.figure()
+#     df.boxplot([column])
+# df.boxplot(['Expectativa'])
+# df[['IdAnalista']].drop_duplicates().boxplot(['IdAnalista'])
+# plt.show()
+# plt.close()
+# df[['IdAnalista']].drop_duplicates().describe()
+# type()
+# xxx
+# # boxplot y violin
+# # metodo 1
+# import seaborn as sns
+# df_plot=df[['IdAnalista']].drop_duplicates()
+# sns.violinplot(data=df_plot, inner=None, color='white', linewidth=1)
+# sns.boxplot(data=df_plot, width=0.3, color='orange')
+# # metodo 2
+# #plt.boxplot(df[['IdAnalista']].drop_duplicates().values)
+# df[['IdAnalista']].drop_duplicates().boxplot(['IdAnalista'])
+# plt.violinplot(df[['IdAnalista']].drop_duplicates().values)
+# # muestra
+# plt.show()
+# plt.close()
+# 
+# 
+# 
+# bonost	Nivel de la tasa de interés del cete a 28 días
+# bonost1	Nivel de la tasa de interés del cete a 28 días
+# bonost2	Nivel de la tasa de interés del cete a 28 días
+# bonost3	Nivel de la tasa de interés del cete a 28 días
+# cetest	Nivel de la tasa de interés del cete a 28 días
+# cetest1	Nivel de la tasa de interés del cete a 28 días
+# cetest2	Nivel de la tasa de interés del cete a 28 días
+# cetest3	Nivel de la tasa de interés del cete a 28 días
+# fondeot	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas1	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas2	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas3	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas4	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas5	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas6	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas7	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas8	Nivel de la tasa de interés del cete a 28 días
+# fondeotmas9	Nivel de la tasa de interés del cete a 28 días
+# 
+# Inflación general al cierre
+# 
+# 
+# 
+# xxx
+# 
+# 
+# df_variables.query('Tema == "Nivel de la tasa de interés del cete a 28 días; al cierre del periodo; anual"')
+# esto esta maaal se ve en los idvariable
+# 
+# x['PrimerasLetrasIdVariable']=x['IdVariable'].apply(lambda s: s[:10])
+# ....
+# 
+# xxx
+# 
+# 
+# 
+# xxx
+# # Ver si corresponden las primeras letras de IdVariable con Tema
+# xxx ver si el idvariable no corresponde entonces tal vez se eligio mal el tema
+# xxx o hay incongruencia en esas variables y habria que quitarlas
+# df_variables[['IdVariable','Tema']].sort_values(['Tema'], ascending=False)
+# 
+# 
+# df_variables.loc[df_variables['Tema']==''].shape
+# if df_variables.loc[df_variables['Tema']==''].shape[0] > 0:
+#     raise Exception('Aún hay variables sin tema.')
+# 
+# xxx
+# 
+# 
+# 
+# #### df=df.merge(df_variables, how='left', on=['IdVariable','Variable'])
+# 
+# 
+# # **====== PENDIENTE:**
+# # 
+# # Convertir variables categóricas (si/no; mucho/poco/nada).
+# # 
+# # 5. Estadísticas descriptivas
+# # 6. Visualización
+# # 7. Análisis de variables
+# # univariate, bivariate, or multivariate
+# # 8. Análisis de series de tiempo
+# # When we analyze time series data, we can typically uncover patterns or trends that repeat over time and present a temporal seasonality. Key components of time series data include trends, seasonal variations, cyclical variations, and irregular variations or noise.}
+# # 
+# 
+# 
+# # --------------------------------------------------------------------------
+# # Estadísticas descriptivas
+# 
+# # Análisis de número de respuestas
+# respuestasPorAño = df.groupby(by=["Año"])["Expectativa"].count()
+# respuestasPorAño.name = 'Número de respuestas por año'
+# respuestasPorAño.index.name = 'Año de la Enuesta'
+# respuestasPorAño.to_frame().plot.bar(
+#     title='Número de respuestas por año de la Encuesta (2024 año en curso)',
+#     rot=70,
+#     figsize=(10, 5),
+#     color='darkblue')
+# plt.show()
+# plt.close()
+# analistasDistintosPorAño = df.groupby(by=["Año"])["IdAnalista"].unique().apply(len)
+# analistasDistintosPorAño.name = 'Número de analistas distintos'
+# analistasDistintosPorAño.index.name = 'Año de la Enuesta'
+# analistasDistintosPorAño.to_frame().plot.bar(
+#     title='Número de analistas distintos por año de la Encuesta (2024 año en curso)',
+#     rot=70,
+#     figsize=(10, 5),
+#     color ='darkred')
+# plt.show()
+# plt.close()
+# analistasDistintosPorAño = df.groupby(by=["Año"])["Variable"].unique().apply(len)
+# analistasDistintosPorAño.name = 'Número de preguntas distintas'
+# analistasDistintosPorAño.index.name = 'Año de la Enuesta'
+# analistasDistintosPorAño.to_frame().plot.bar(
+#     title='Número de preguntas por año de la Encuesta (2024 año en curso)',
+#     rot=70,
+#     figsize=(10, 5),
+#     color ='g')
+# plt.show()
+# plt.close()
+# # **Por tanto, se concluye que el aumento de respuestas desde 2013 se podría explicar por el aumento de preguntas más que por el aumento de analistas.**
+# 
+# # Análisis de la Expectativa de Inflación General Anual
+# inflacion_general_anual=df.query('IdVariable=="infgent"')
+# inflacion_general_anual = inflacion_general_anual[['Año','Expectativa']] # Crea dataframe con sólo estas dos columnas
+# print(inflacion_general_anual)
+# x=inflacion_general_anual.plot.scatter(
+#     x='Año', y='Expectativa',
+#     rot=70,
+#     figsize=(10, 5),
+#     color='purple', alpha=0.2)
+# plt.show()
+# plt.close()
+# # Se asume que la distribución es normal, por lo que hacemos una gráfica de caja
+# axes = inflacion_general_anual.boxplot(
+#     column='Expectativa', by='Año',
+#     ylabel='Porcentaje', xlabel='Año de la encuesta',
+#     rot=70,
+#     figsize=(10, 5),
+#     color='purple')
+# axes.set_title('Expectativa de Inflación General al cierre del año de la encuesta')
+# plt.show()
+# plt.close()
+# 
+# 
+# # --------------------------------------------------------------------------
+# # Correlaciones
+# 
+# # Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
+# df_corrs=df_variables_en_columnas.corr()
+# print(f'Son {df_variables_en_columnas.columns.size} variables.')
+# df_corrs.sample(4, random_state=semilla)
+# 
+# f = plt.figure(figsize=(10, 10))
+# plt.matshow(df_corrs, f)
+# plt.show()
+# plt.close()
+# print('Son demasiadas variables para una sola gráfica.')
+# 
+# https://www.jmp.com/es_mx/statistics-knowledge-portal/what-is-correlation.html
+# 
+# 
+# #df['Tema'].drop_duplicates()
+# #df[df.Tema.str.contains('PIB')].groupby(['Tema'])['Expectativa'].mean()
+# #df[df.Tema.str.contains('Cuenta')].groupby(['Tema'])['Expectativa'].mean()
+# _1=df[df.Tema=='Variación porcentual anual del PIB; trimestral'] \
+#     [['Fecha','Expectativa']].groupby(['Fecha']).mean()
+# _2=df[df.Tema=='Cuenta Corriente; saldo anual al cierre del año; anual'] \
+#     [['Fecha','Expectativa']].groupby(['Fecha']).mean()
+# 
+# 
+# 
+# 
+# entre medias de las expectativas de inflacion y del pib, por ejemplo, a traves del tiempo
+# 
+# o entre las expectativas del analista 1 vs el 2 a traves del tiempo, y asi todos contra todos
+# 
+# calculando p?
+# 
+# 
+# https://realpython.com/numpy-scipy-pandas-correlation-python/
