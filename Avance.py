@@ -869,6 +869,16 @@ print('Son demasiadas variables para una sola gráfica.')
 https://www.jmp.com/es_mx/statistics-knowledge-portal/what-is-correlation.html
 
 
+#df['Tema'].drop_duplicates()
+#df[df.Tema.str.contains('PIB')].groupby(['Tema'])['Expectativa'].mean()
+#df[df.Tema.str.contains('Cuenta')].groupby(['Tema'])['Expectativa'].mean()
+_1=df[df.Tema=='Variación porcentual anual del PIB; trimestral'] \
+    [['Fecha','Expectativa']].groupby(['Fecha']).mean()
+_2=df[df.Tema=='Cuenta Corriente; saldo anual al cierre del año; anual'] \
+    [['Fecha','Expectativa']].groupby(['Fecha']).mean()
+
+
+
 
 entre medias de las expectativas de inflacion y del pib, por ejemplo, a traves del tiempo
 
