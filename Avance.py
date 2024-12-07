@@ -149,11 +149,11 @@ print('Visualización de estadísticas descriptivas de las columnas numéricas:'
 print(df.describe())
 print('Se observa que existe el IdAnalista con valor a cero.')
 
-print('Visualización de estadísticas descriptivas de la longitud de NombreAbsolutoCorto:')
-print(df['NombreAbsolutoCorto'].apply(lambda s: len(s)).describe())
+print('Mínima y máxima longitud de NombreAbsolutoCorto:')
+print(df['NombreAbsolutoCorto'].apply(lambda s: len(s)).agg(['min', 'max']))
 
-print('Visualización de estadísticas descriptivas de la longitud de NombreAbsolutoLargo:')
-print(df['NombreAbsolutoLargo'].apply(lambda s: len(s)).describe())
+print('Mínima y máxima longitud de NombreAbsolutoLargo:')
+print(df['NombreAbsolutoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
 
 
 # --------------------------------------------------------------------------
@@ -200,13 +200,13 @@ df=df.rename(columns={
 print(f'Después:\n{df.columns}')
 print(df.head())
 
-# 4.5. Valores faltantes
+# 4.6. Valores faltantes
 if df.isnull().sum().sum() > 0:
     raise Exception('Hay valores faltantes y no se trataron')
 else:
     print('No existen valores faltantes')
 
-# 4.6. Limpieza de los datos: busca duplicados sin contar la columna Dato:
+# 4.7. Limpieza de los datos: busca duplicados sin contar la columna Dato:
 # sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
                .duplicated(keep=False)
@@ -223,7 +223,7 @@ print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,}' +
       f' registros; es decir '
       f'{(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
 
-# 4.7. Limpieza de los datos: Busca incongruencias en variables
+# 4.8. Limpieza de los datos: Busca incongruencias en variables
 # Un NombreCorto debe tener un solo NombreLargo y viceversa.
 #
 # Deben estar pareados los nombres relativos; es decir,
@@ -250,7 +250,7 @@ df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep=
 df=quita_duplicados(df, df_vars_nombres_relativos, 'IdVariable')
 df=quita_duplicados(df, df_vars_nombres_relativos, 'Variable')
 
-# 4.8. Orden
+# 4.9. Orden
 # Renglones: ordenar por fecha, variable, analista.
 print('Antes:\n',df['Año'].unique())
 df=df.sort_values(by=['Año','Mes', 'Variable', 'IdAnalista'])
@@ -264,7 +264,7 @@ print('\nDespués:')
 print(df.columns)
 print(df.head())
 
-# 4.7. Agrupación de las variables por tema
+# 4.10. Agrupación de las variables por tema
 # Cada tema tiene una o más variables para distintos horizontes de expectativa.
 df_variables=df[['IdVariable','Variable']].drop_duplicates(keep='first')
 df_variables=df_variables.sort_values(['Variable'])
@@ -385,7 +385,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente en rango: probabilidad; al cierre del periodo; anual',
+    'Inflación subyacente en rango: porcentaje de probabilidad; al cierre del periodo; anual',
         ('Inflación subyacente al cierre del año en curso (año t), probabilidad de que se encuentre en rango',
          'Inflación subyacente al cierre del siguiente año (año t+1), probabilidad de que se encuentre en rango',
          'Inflación subyacente al cierre dentro de dos años (año t+2), probabilidad de que se encuentre en rango',
@@ -472,23 +472,24 @@ pone_tema_por_prefijo_variable(df_variables,
         ('Sectores Problemas Competencia'))
 
 imprime_siguentes_variables(df_variables)
+imprime_siguentes_variables(df_variables,4)
 pone_tema_por_prefijo_variable(df_variables,
     'Tasa nacional de desocupación: porcentaje; al cierre del periodo; anual',
         ('Tasa nacional de desocupación al cierre'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Tasa nacional de desocupación promedio: porcentaje; al cierre del periodo; anual',
+    'Tasa nacional de desocupación: porcentaje; promedio durante el periodo; anual',
         ('Tasa nacional de desocupación promedio del '))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Valor del tipo de cambio al cierre del año en curso: tipo de cambio; al cierre del periodo; anual',
+    'Tipo de cambio: tipo de cambio; al cierre del año; al cierre del año',
         ('Valor del tipo de cambio al cierre del año en curso'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Valor del tipo de cambio promedio: tipo de cambio; durante el periodo; mensual',
+    'Tipo de cambio: tipo de cambio; promedio durante el periodo; mensual',
         ('Valor del tipo de cambio promedio durante el mes'))
 
 imprime_siguentes_variables(df_variables)
@@ -498,7 +499,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación en el número de trabajadores asegurados: número de personas; al cierre del periodo; _desconocido',
+    'Trabajadores asegurados: variación en el número de personas; al cierre del periodo; _desconocido',
         ('Variación en el número de trabajadores asegurados'))
 
 imprime_siguentes_variables(df_variables,5)
@@ -508,7 +509,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables, width=200)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB, probabilidad en el rango: porcentaje de probabilidad; al cierre del periodo; anual',
+    'Variación porcentual anual del PIB en rango: porcentaje de probabilidad; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB en '))
 
 imprime_siguentes_variables(df_variables)
@@ -554,12 +555,12 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general, probabilidad en el rango en 12 meses: porcentaje de probabilidad; al cierre del periodo; a largo plazo',
+    'Inflación general en rango: porcentaje de probabilidad; al cierre del periodo; 12 meses',
         ('inflacióngeneral_prob12m'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente, probabilidad en el rango en 12 meses: porcentaje de probabilidad; al cierre del periodo; a largo plazo',
+    'Inflación subyacente en rango: porcentaje de probabilidad; al cierre del periodo; 12 meses',
         ('inflaciónsubyacente_prob12m'))
 
 imprime_siguentes_variables(df_variables)
@@ -578,8 +579,9 @@ else:
 # Quita las variables temporales que se usaron para el tema.
 df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
 
-if df_variables[['Tema']].drop_duplicates(keep='first').shape[0] != 34:
-    raise Exception('Cambió el número de temas.')
+numero_temas = df_variables[['Tema']].drop_duplicates(keep='first').shape[0]
+if numero_temas != 29:
+    raise Exception(f'Cambió el número de temas: {numero_temas}')
 
 print('Temas:')
 imprime_temas()
@@ -590,7 +592,7 @@ imprime_temas3()
 print('Unidades:')
 imprime_unidades()
 
-
+print("...---...")
 
 # 
 # # Cuántas variables tiene cada tema
