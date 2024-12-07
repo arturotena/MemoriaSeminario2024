@@ -334,12 +334,12 @@ imprime_unidades()
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Balance económico del sector público: _desconocida; al cierre del periodo; anual',
+    'Balance económico del sector público: _desconocido; al cierre del periodo; anual',
         ('Balance económico del sector público'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Balanza Comercial: _desconocida; al cierre del periodo; anual',
+    'Balanza Comercial: _desconocido; al cierre del periodo; anual',
         ('Balanza'))
 
 imprime_siguentes_variables(df_variables)
@@ -349,7 +349,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Cuenta Corriente: _desconocida; al cierre del periodo; anual',
+    'Cuenta Corriente: _desconocido; al cierre del periodo; anual',
         ('Cuenta '))
 
 imprime_siguentes_variables(df_variables)
@@ -426,20 +426,22 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Intensidad Competencia: nivel; _desconocido; _desconocido',
+    'Intensidad Competencia: nivel (1 a 7); _desconocido; _desconocido',
         ('Intensi'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inversión Extranjera Directa: _desconocida; al cierre del periodo; anual',
+    'Inversión Extranjera Directa: _desconocido; al cierre del periodo; anual',
         ('Inversi'))
 
 imprime_siguentes_variables(df_variables)
+imprime_siguentes_variables(df_variables, 11)
 pone_tema_por_prefijo_variable(df_variables,
     'Tasa de fondeo interbancaria: porcentaje; al cierre del periodo; trimestral',
         ('Nivel de la tasa de fondeo interbancaria al cierre'))
 
 imprime_siguentes_variables(df_variables)
+imprime_siguentes_variables(df_variables, 5)
 pone_tema_por_prefijo_variable(df_variables,
     'Tasa de interés de los Bonos M a 10 años: porcentaje; al cierre del periodo; anual',
         ('Nivel de la tasa de interés de los Bonos M a 10 años al cierre'))
@@ -451,7 +453,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Obstáculos Enfrentan Empresarios: nivel; _desconocido; _desconocido',
+    'Obstáculos Enfrentan Empresarios: _desconocido; _desconocido; _desconocido',
         ('Obstáculos Enfrentan Empresarios'))
 
 imprime_siguentes_variables(df_variables)
@@ -461,12 +463,12 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Requerimientos financieros del sector público: _desconocida; al cierre del periodo; anual',
+    'Requerimientos financieros del sector público: _desconocido; al cierre del periodo; anual',
         ('Saldo de requerimientos financieros del sector público al cierre del'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Sectores Problemas Competencia: nivel; _desconocido; _desconocido',
+    'Sectores Problemas Competencia: _desconocido; _desconocido; _desconocido',
         ('Sectores Problemas Competencia'))
 
 imprime_siguentes_variables(df_variables)
