@@ -385,7 +385,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente en rango: porcentaje de probabilidad; al cierre del periodo; anual',
+    'Inflación subyacente: porcentaje de probabilidad en rango; al cierre del periodo; anual',
         ('Inflación subyacente al cierre del año en curso (año t), probabilidad de que se encuentre en rango',
          'Inflación subyacente al cierre del siguiente año (año t+1), probabilidad de que se encuentre en rango',
          'Inflación subyacente al cierre dentro de dos años (año t+2), probabilidad de que se encuentre en rango',
@@ -458,7 +458,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Probabilidad de reducción en el PIB trimestral: porcentaje; _desconocido; trimestral',
+    'PIB, Probabilidad de reducción en el PIB trimestral: porcentaje; _desconocido; trimestral',
         ('Probabilidad de reducción en el PIB trimestral'))
 
 imprime_siguentes_variables(df_variables)
@@ -494,7 +494,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación desestacionalizada del PIB: porcentaje; al cierre del periodo; trimestral',
+    'PIB, Variación desestacionalizada del PIB: porcentaje; al cierre del periodo; trimestral',
         ('Variación desestacionalizada del PIB'))
 
 imprime_siguentes_variables(df_variables)
@@ -504,22 +504,22 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables,5)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB de Estados Unidos: porcentaje; al cierre del periodo; anual',
+    'PIB EEUUA, Variación porcentual anual del PIB de Estados Unidos: porcentaje; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB de Estados Unidos'))
 
 imprime_siguentes_variables(df_variables, width=200)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB en rango: porcentaje de probabilidad; al cierre del periodo; anual',
+    'PIB, Variación porcentual anual del PIB en rango: porcentaje de probabilidad; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB en '))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB para los próximos 10 años: porcentaje; al cierre del periodo; a largo plazo',
+    'PIB, Variación porcentual anual del PIB para los próximos 10 años: porcentaje; al cierre del periodo; a largo plazo',
         ('Variación porcentual anual del PIB para los próximos 10 años'))
 
 imprime_siguentes_variables(df_variables, width=150)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB: porcentaje; al cierre del periodo; anual',
+    'PIB, Variación porcentual anual del PIB: porcentaje; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB, año anterior al correspondiente del levantamiento de la Encuesta (año t-1)',
          'Variación porcentual anual del PIB, año en curso (año t)',
          'Variación porcentual anual del PIB, siguiente año (año t+1)',
@@ -529,7 +529,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Variación porcentual anual del PIB: porcentaje; al cierre del periodo; trimestral',
+    'PIB, Variación porcentual anual del PIB: porcentaje; al cierre del periodo; trimestral',
         ('Variación porcentual anual del PIB, '))
 
 imprime_siguentes_variables(df_variables)
@@ -555,12 +555,12 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general en rango: porcentaje de probabilidad; al cierre del periodo; 12 meses',
+    'Inflación general: porcentaje de probabilidad en rango; al cierre del periodo; 12 meses',
         ('inflacióngeneral_prob12m'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente en rango: porcentaje de probabilidad; al cierre del periodo; 12 meses',
+    'Inflación subyacente: porcentaje de probabilidad en rango; al cierre del periodo; 12 meses',
         ('inflaciónsubyacente_prob12m'))
 
 imprime_siguentes_variables(df_variables)
@@ -580,7 +580,7 @@ else:
 df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
 
 numero_temas = df_variables[['Tema']].drop_duplicates(keep='first').shape[0]
-if numero_temas != 29:
+if numero_temas != 27:
     raise Exception(f'Cambió el número de temas: {numero_temas}')
 
 print('Temas:')
