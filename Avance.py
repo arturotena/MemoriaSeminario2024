@@ -368,7 +368,7 @@ imprime_siguentes_variables(df_variables)
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general al cierre: porcentaje; al cierre del periodo; anual',
+    'Inflación general: porcentaje; al cierre del periodo; anual',
         ('Inflación general al cierre '))
 
 imprime_siguentes_variables(df_variables, n=14)
@@ -385,7 +385,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente: porcentaje de probabilidad; al cierre del periodo; anual',
+    'Inflación subyacente en rango: probabilidad; al cierre del periodo; anual',
         ('Inflación subyacente al cierre del año en curso (año t), probabilidad de que se encuentre en rango',
          'Inflación subyacente al cierre del siguiente año (año t+1), probabilidad de que se encuentre en rango',
          'Inflación subyacente al cierre dentro de dos años (año t+2), probabilidad de que se encuentre en rango',
@@ -417,11 +417,11 @@ print(df_variables.query('PrimerasLetras == "Inflaci" and Tema==""'))
 # También se consultó: https://www.banxico.org.mx/SieInternet/consultarDirectori
 # oInternetAction.do?sector=24&accion=consultarCuadro&idCuadro=CR155&locale=es
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación general para los próximos 12 meses: porcentaje; _desconocido; a largo plazo',
+    'Inflación general: porcentaje; al cierre del periodo; 12 meses',
         ('Inflacióngeneral_12m_'))
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Inflación subyacente para los próximos 12 meses: porcentaje; _desconocido; a largo plazo',
+    'Inflación subyacente: porcentaje; al cierre del periodo; 12 meses',
         ('Inflaciónsubyacente_12m_'))
 
 imprime_siguentes_variables(df_variables)
