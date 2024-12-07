@@ -272,7 +272,7 @@ df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
 df_variables['Tema2']=''
-df_variables['Tema3']=''
+df_variables['Horizonte']=''
 df_variables['Unidades']=''
 print(df_variables.head())
 
@@ -299,9 +299,9 @@ def imprime_temas():
 def imprime_temas2():
     imprime_array(
         df_variables['Tema2'].drop_duplicates(keep='first').sort_values().values)
-def imprime_temas3():
+def imprime_horizontes():
     imprime_array(
-        df_variables['Tema3'].drop_duplicates(keep='first').sort_values().values)
+        df_variables['Horizonte'].drop_duplicates(keep='first').sort_values().values)
 def imprime_unidades():
     imprime_array(
         df_variables['Unidades'].drop_duplicates(keep='first').sort_values().values)
@@ -313,12 +313,12 @@ def pone_tema_por_prefijo_variable(df_variables, temas, prefijos:tuple):
     tema=tmp[0]
     unidades=tmp[1]
     tema2=lst_temas[1]
-    tema3=lst_temas[2]
+    horizonte=lst_temas[2]
     condicion = (df_variables['Variable'].str.startswith(prefijos)) \
                 & (df_variables['Tema'] == '')
     df_variables.loc[condicion, ['Tema']] = tema
     df_variables.loc[condicion, ['Tema2']] = tema2
-    df_variables.loc[condicion, ['Tema3']] = tema3
+    df_variables.loc[condicion, ['Horizonte']] = horizonte
     df_variables.loc[condicion, ['Unidades']] = unidades
     cuenta_variables = df_variables.loc[condicion, ['Variable']] \
                             .drop_duplicates(keep='first').shape[0]
@@ -326,7 +326,7 @@ def pone_tema_por_prefijo_variable(df_variables, temas, prefijos:tuple):
 
 imprime_temas()
 imprime_temas2()
-imprime_temas3()
+imprime_horizontes()
 imprime_unidades()
 # En este momento no hay ninguno.
 
@@ -588,7 +588,7 @@ imprime_temas()
 print('Cifras:')
 imprime_temas2()
 print('Horizontes:')
-imprime_temas3()
+imprime_horizontes()
 print('Unidades:')
 imprime_unidades()
 
