@@ -509,7 +509,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables, width=200)
 pone_tema_por_prefijo_variable(df_variables,
-    'PIB, Variación porcentual anual del PIB en rango: porcentaje de probabilidad; al cierre del periodo; anual',
+    'PIB, Variación porcentual anual del PIB: porcentaje de probabilidad en rango; al cierre del periodo; anual',
         ('Variación porcentual anual del PIB en '))
 
 imprime_siguentes_variables(df_variables)
@@ -580,7 +580,7 @@ else:
 df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
 
 numero_temas = df_variables[['Tema']].drop_duplicates(keep='first').shape[0]
-if numero_temas != 27:
+if numero_temas != 26:
     raise Exception(f'Cambió el número de temas: {numero_temas}')
 
 print('Temas:')
@@ -592,12 +592,12 @@ imprime_temas3()
 print('Unidades:')
 imprime_unidades()
 
-print("...---...")
+print("xxxxxxxxxxxxxxxxxxxxxxxx")
 
-# 
-# # Cuántas variables tiene cada tema
-# print(df_variables.groupby(['Tema'])['Variable'].count())
-# print(df_variables.groupby(['Tema'])['Variable'].count().sort_values())
+print('Cuántas variables tiene cada tema:')
+print(df_variables.groupby(['Tema'])['Variable'].count())
+print('Los 5 temas con más variables:')
+print(df_variables.groupby(['Tema'])['Variable'].count().sort_values(ascending=False).head(4))
 # 
 # # Asigna el tema al data set.
 # df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
