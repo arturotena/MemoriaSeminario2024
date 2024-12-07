@@ -953,3 +953,11 @@ print("xxxxxxxxxxxxxxxxxxxxxxxx")
 # 
 # 
 # https://realpython.com/numpy-scipy-pandas-correlation-python/
+
+# problema con no supervisado es random el ini io cengroide
+# 
+# https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/
+# 
+# 
+# Outliers Detection: Anomaly detection is the identification of rare or unusual data points. By clustering data into different groups and observing clusters with significantly fewer data points, the Elbow Method can assist in identifying anomalies or outliers more effectively.
+# https://medium.com/@zalarushirajsinh07/the-elbow-method-finding-the-optimal-number-of-clusters-d297f5aeb189
