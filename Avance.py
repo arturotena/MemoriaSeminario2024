@@ -271,9 +271,9 @@ df_variables=df_variables.sort_values(['Variable'])
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(lambda s: ' '.join(s.split(' ')[:2]))
 df_variables['Tema']=''
-df_variables['Tema2']=''
+df_variables['Cifra']=''
 df_variables['Horizonte']=''
-df_variables['Unidades']=''
+df_variables['Unidad']=''
 print(df_variables.head())
 
 def imprime_array(s, n=-1, width=-1):
@@ -296,36 +296,42 @@ def imprime_siguentes_variables(df_variables, n=-1, width=-1):
 def imprime_temas():
     imprime_array(
         df_variables['Tema'].drop_duplicates(keep='first').sort_values().values)
-def imprime_temas2():
+def imprime_cifras():
     imprime_array(
-        df_variables['Tema2'].drop_duplicates(keep='first').sort_values().values)
+        df_variables['Cifra'].drop_duplicates(keep='first').sort_values().values)
 def imprime_horizontes():
     imprime_array(
         df_variables['Horizonte'].drop_duplicates(keep='first').sort_values().values)
 def imprime_unidades():
     imprime_array(
-        df_variables['Unidades'].drop_duplicates(keep='first').sort_values().values)
+        df_variables['Unidad'].drop_duplicates(keep='first').sort_values().values)
 
-def pone_tema_por_prefijo_variable(df_variables, temas, prefijos:tuple):
-    lst_temas=[un_tema.strip() for un_tema in temas.split(';')]
+def pone_tema_por_prefijo_variable(df_variables, detalles:str, prefijos:tuple):
+    '''
+    A partir de los detalles asigna las columnas Tema, Cifra, Horizonte, y
+    Unidad a los renglones del data frame que no tengan Tema asignado y cuya
+    columna Variable comience con uno de los prefijos.
+    Se espera que detalles tenga el formato: 'tema: unidad; cifra; horizonte'.
+    '''
+    lst_temas=[un_tema.strip() for un_tema in detalles.split(';')]
     if len(lst_temas) < 3: lst_temas.append('')
     tmp=lst_temas[0].split(':')
     tema=tmp[0]
-    unidades=tmp[1]
-    tema2=lst_temas[1]
+    unidad=tmp[1]
+    cifra=lst_temas[1]
     horizonte=lst_temas[2]
     condicion = (df_variables['Variable'].str.startswith(prefijos)) \
                 & (df_variables['Tema'] == '')
     df_variables.loc[condicion, ['Tema']] = tema
-    df_variables.loc[condicion, ['Tema2']] = tema2
+    df_variables.loc[condicion, ['Cifra']] = cifra
     df_variables.loc[condicion, ['Horizonte']] = horizonte
-    df_variables.loc[condicion, ['Unidades']] = unidades
+    df_variables.loc[condicion, ['Unidad']] = unidad
     cuenta_variables = df_variables.loc[condicion, ['Variable']] \
                             .drop_duplicates(keep='first').shape[0]
     print(f'Tema asignado para {cuenta_variables} variables distintas')
 
 imprime_temas()
-imprime_temas2()
+imprime_cifras()
 imprime_horizontes()
 imprime_unidades()
 # En este momento no hay ninguno.
@@ -479,17 +485,17 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Tasa nacional de desocupación: porcentaje; promedio durante el periodo; anual',
+    'Tasa nacional de desocupación: porcentaje; promedio del periodo; anual',
         ('Tasa nacional de desocupación promedio del '))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Tipo de cambio: tipo de cambio; al cierre del año; al cierre del año',
+    'Tipo de cambio: tipo de cambio; al cierre del periodo; al cierre del año',
         ('Valor del tipo de cambio al cierre del año en curso'))
 
 imprime_siguentes_variables(df_variables)
 pone_tema_por_prefijo_variable(df_variables,
-    'Tipo de cambio: tipo de cambio; promedio durante el periodo; mensual',
+    'Tipo de cambio: tipo de cambio; promedio del periodo; mensual',
         ('Valor del tipo de cambio promedio durante el mes'))
 
 imprime_siguentes_variables(df_variables)
@@ -586,18 +592,19 @@ if numero_temas != 26:
 print('Temas:')
 imprime_temas()
 print('Cifras:')
-imprime_temas2()
+imprime_cifras()
 print('Horizontes:')
 imprime_horizontes()
-print('Unidades:')
+print('Unidad:')
 imprime_unidades()
-
-print("xxxxxxxxxxxxxxxxxxxxxxxx")
 
 print('Cuántas variables tiene cada tema:')
 print(df_variables.groupby(['Tema'])['Variable'].count())
 print('Los 5 temas con más variables:')
 print(df_variables.groupby(['Tema'])['Variable'].count().sort_values(ascending=False).head(4))
+
+print("xxxxxxxxxxxxxxxxxxxxxxxx")
+
 # 
 # # Asigna el tema al data set.
 # df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
