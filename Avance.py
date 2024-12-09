@@ -68,7 +68,7 @@ if not os.getcwd().endswith('datasets'):
 semilla=1 #'Una semilla fija para reproducibilidad
 
 
-# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # 1. Importar bibliotecas
 import pandas as pd
 import numpy as np
@@ -97,7 +97,7 @@ else:
     raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
 
 
-# ----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # 2. Adquisición de datos
 
 # Path de datasets locales
@@ -110,7 +110,7 @@ df_exp2 = pd.read_csv(Microdatos_1999_01_csv_path, encoding='latin-1')
 df = pd.concat([df_exp1, df_exp2], ignore_index=True)  # ignore_index porque no son relevantes
 
 
-# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # 3. Inspección inicial
 
 # Obtener información general sobre los datos, tal como la cantidad de filas y
@@ -156,7 +156,7 @@ print('Mínima y máxima longitud de NombreAbsolutoLargo:')
 print(df['NombreAbsolutoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
 
 
-# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # 4. Preparación de los datos
 
 # 4.1. Limpieza de los datos: búsqueda de duplicados.
@@ -359,18 +359,7 @@ pone_tema_por_prefijo_variable(df_variables,
         ('Cuenta '))
 
 imprime_siguentes_variables(df_variables)
-# Son los diferentes tipos de inflación:
-#     Inflación general al cierre; al cierre del periodo; anual
-#     Inflación general para dentro de; _desconocido; mensual
-#         Inflación general para el mes en curso
-#         Inflación general para el siguiente mes
-#     Inflación general para los próximos; a largo plazo
-#     Inflación subyacente al cierre; al cierre del periodo; anual
-#     Inflación subyacente para dentro de; _desconocido; mensual
-#         Inflación subyacente para el mes en curso
-#         Inflación subyacente para el siguiente mes
-#     Inflacióngeneral_12m
-#     Inflaciónsubyacente_12m
+# Son los diferentes tipos de inflación.
 
 imprime_siguentes_variables(df_variables, n=61)
 pone_tema_por_prefijo_variable(df_variables,
@@ -603,20 +592,26 @@ print(df_variables.groupby(['Tema'])['Variable'].count())
 print('Los 5 temas con más variables:')
 print(df_variables.groupby(['Tema'])['Variable'].count().sort_values(ascending=False).head(4))
 
-print("xxxxxxxxxxxxxxxxxxxxxxxx")
+# Asigna tema, cifra, hozironte, y unidad a los renglones del data set.
+df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
+df.columns
+df_variables.columns
+df = df.reindex(columns=[
+    'Año', 'Mes', 'Fecha',
+    'Tema', 'Cifra', 'Horizonte', 'Unidad',
+    'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
+if (df.loc[df['Tema'] == ''].shape[0] > 0 |
+    df.loc[df['Cifra'] == ''].shape[0] > 0 |
+    df.loc[df['Horizonte'] == ''].shape[0] > 0 |
+    df.loc[df['Unidad'] == ''].shape[0] > 0) :
+    raise Exception('No todos los renglones quedaron con tema')
 
-# 
-# # Asigna el tema al data set.
-# df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
-# df = df.reindex(columns=['Año', 'Mes', 'Fecha', 'Tema', 'IdVariable', 'Variable', 'IdAnalista', 'Expectativa'])
-# if df.loc[df['Tema'] == ''].shape[0] > 0:
-#     raise Exception('No todos los renglones quedaron con tema')
-# 
-# # 4.9 Pasar las variables a columnas
+
+# # 4.11 Pasar las variables a columnas
 # print(list(df.columns.values))
 # df_variables_en_columnas=df.pivot(
 #     index=['Año', 'Mes', 'Fecha','IdAnalista'],
-#     columns=['Tema','IdVariable'], #, 'Variable'],
+#     columns=['Tema','Cifra', 'Horizonte', 'Unidad','IdVariable', 'Variable'],
 #     values='Expectativa')
 # 
 # print('DataFrame con variables en columnas:' +
@@ -629,8 +624,10 @@ print("xxxxxxxxxxxxxxxxxxxxxxxx")
 # print('Estadísticas descriptivas por IdVariable')
 # df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
 # print(df_estad_descr_por_variable.reset_index().to_string())
-# 
-# 
+
+#wdel cuenta_original
+
+
 # xxxxx
 # graficando
 # 
@@ -845,7 +842,7 @@ print("xxxxxxxxxxxxxxxxxxxxxxxx")
 # #### df=df.merge(df_variables, how='left', on=['IdVariable','Variable'])
 # 
 # 
-# # **====== PENDIENTE:**
+# # **====== PENDIENTE:**
 # # 
 # # Convertir variables categóricas (si/no; mucho/poco/nada).
 # # 
@@ -858,7 +855,7 @@ print("xxxxxxxxxxxxxxxxxxxxxxxx")
 # # 
 # 
 # 
-# # --------------------------------------------------------------------------
+# # --------------------------------------------------------------------------
 # # Estadísticas descriptivas
 # 
 # # Análisis de número de respuestas
@@ -917,7 +914,7 @@ print("xxxxxxxxxxxxxxxxxxxxxxxx")
 # plt.close()
 # 
 # 
-# # --------------------------------------------------------------------------
+# # --------------------------------------------------------------------------
 # # Correlaciones
 # 
 # # Calcula la correlación entre todas las variables y todos los analistas en todas las fechas.
