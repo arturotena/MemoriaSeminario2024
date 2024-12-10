@@ -605,7 +605,12 @@ if (df.loc[df['Tema'] == ''].shape[0] > 0 |
     raise Exception('No todos los renglones quedaron con tema')
 
 
-# # 4.11 Pasar las variables a columnas
+# 4.12 Elegir un horizonte por variable
+xxxxxx
+
+
+# # Opcional:
+# # Pasar las variables a columnas
 # print(list(df.columns.values))
 # df_variables_en_columnas=df.pivot(
 #     index=['Año', 'Mes', 'Fecha','IdAnalista'],
@@ -623,7 +628,8 @@ if (df.loc[df['Tema'] == ''].shape[0] > 0 |
 # df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
 # print(df_estad_descr_por_variable.reset_index().to_string())
 
-#wdel cuenta_original
+
+
 
 
 # xxxxx
