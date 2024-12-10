@@ -36,34 +36,32 @@
 # verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
 
 
+# ---------------------------------------------------------------------------
+# Cambia el directorio local al directorio donde están los archivos CSV.
+
 import os
 
 print('Directorio inicial:', os.getcwd())
 try:
     os.chdir('d:/')
     os.chdir('Proyectos/RStudioProyectos/GitHub')
+    os.chdir('datasets')
 except FileNotFoundError as e:
-    print('No estamos en Windows')
-
-try:
-    os.chdir('Downloads')
-    os.chdir('GitHub')
-except FileNotFoundError as e:
-    print('No estamos en Mac')
-
-try:
-    os.chdir('MemoriaSeminario2024')
-except:
+    # No estamos en Windows
     pass
 
 try:
+    os.chdir(os.path.expanduser("~"))
+    os.chdir('Downloads')
+    os.chdir('MemoriaSeminario2024')
     os.chdir('datasets')
-except:
+except FileNotFoundError as e:
+    # No estamos en Mac
     pass
 
 print('Directorio actual:', os.getcwd())
 if not os.getcwd().endswith('datasets'):
-    raise Exception('No se pudo encontrar el directorio de trabajo')
+    raise Exception('No se pudo encontrar el directorio de los data sets')
 
 semilla=1 #'Una semilla fija para reproducibilidad
 
