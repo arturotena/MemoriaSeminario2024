@@ -71,16 +71,19 @@ semilla=1 #'Una semilla fija para reproducibilidad
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-pd.set_option('display.max_columns', 8)
-pd.set_option('display.width', 150)
-#pd.set_option('display.max_colwidth', 200)
+#pd.set_option('display.max_columns', 8)
+#pd.set_option('display.width', 150)
+##pd.set_option('display.max_colwidth', 200)
 
 # Verificar las versiones de las bibliotecas, para mejorar la reproducibilidad.
 from matplotlib import __version__ as mpl_version
 print(f'Pandas: {pd.__version__}.')
 print(f'Numpy: {np.__version__}.')
 print(f'Matplotlib: {mpl_version}.')
+print(f'Seaborn: {sns.__version__}.')
+
 if pd.__version__ in ['2.2.2','2.2.3']:
     print('Pandas OK')
 else:
@@ -93,6 +96,10 @@ if mpl_version == '3.9.2':
     print('Matplotlib OK')
 else:
     raise Exception(f'Versión inesperada de Matplotlib: {mpl_version}.')
+if sns.__version__ == '0.13.2':
+    print('Seaborn OK')
+else:
+    raise Exception(f'Versión inesperada de Seaborn: {sns.__version__}.')
 
 
 # ----------------------------------------------------------------------------
@@ -638,17 +645,19 @@ df_variables_interes = df_variables_interes.query(
 print(df_variables_interes[['Tema', 'Unidad']].drop_duplicates())
 # !!! Aún hay probs. en rango
 
-variables_interes = list(df_variables_interes['IdVariable'])
+variables_interes = df_variables_interes['IdVariable'].values
 print(variables_interes)
-tmp = filter(lambda s : 'rango' not in s, variables_interes)
-print(tmp)
-# !!! No se regresa la lista sin probs. en rango
+
+variables_interes = [x for x in variables_interes if 'rango' not in x]
+print(variables_interes)
+# Se eliminaron las variables de probabilidad en rango
 
 df_interes = df.query('Fecha == "2024-09-01" & IdVariable in @variables_interes')
 df_interes.shape
 
 df_interes_varscols = df_interes.pivot(
     index=['IdAnalista'],
+    #columns=['Variable'],
     columns=['IdVariable'],
     values='Expectativa')
 
@@ -658,25 +667,16 @@ corr = df_interes_varscols.corr()
 print(corr)
 
 # Correlación en enero 2024 de variables de interés
-import seaborn as sns
-mask = np.triu(np.ones_like(corr, dtype=bool))
-#f, ax = plt.subplots(figsize=(11, 9))
-cmap = sns.diverging_palette(230, 20, as_cmap=True)
-sns.heatmap(corr
-    , mask=mask
-    , cmap=cmap
-    #, vmax=.3
-    , center=0
-    #, square=True
-    #, linewidths=.5
-    #,cbar_kws={"shrink": .5}
-    )
+colores=sns.color_palette("vlag", as_cmap=True)
+# paleta divergente
+# https://seaborn.pydata.org/tutorial/color_palettes.html#perceptually-uniform-diverging-palettes
+sns.heatmap(
+    corr,
+    mask=np.triu(corr),
+    cmap=colores, center=0, linewidths=1,
+    square=True)
 plt.show()
 plt.close()
-
-
-
-
 
 
 
