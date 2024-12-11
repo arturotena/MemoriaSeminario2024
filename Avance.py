@@ -667,13 +667,13 @@ corr = df_interes_varscols.corr()
 print(corr)
 
 # Correlación en enero 2024 de variables de interés
-colores=sns.color_palette("vlag", as_cmap=True)
-# paleta divergente
-# https://seaborn.pydata.org/tutorial/color_palettes.html#perceptually-uniform-diverging-palettes
+paleta_divergente=sns.color_palette("vlag", as_cmap=True)
 sns.heatmap(
     corr,
     mask=np.triu(corr),
-    cmap=colores, center=0, linewidths=1,
+    cmap=paleta_divergente,
+    center=0,
+    linewidths=1,
     square=True)
 plt.show()
 plt.close()
