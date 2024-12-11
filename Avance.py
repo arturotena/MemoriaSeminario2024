@@ -1,41 +1,3 @@
-# https://posit.co/blog/three-ways-to-program-in-python-with-rstudio/
-# reticulate::py_install('pandas')
-# reticulate::py_install('matplotlib')
-# https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
-
-
-# primero probar con la maquina de soporte de vectores, 
-# si no se puede con eso regresarse al EDA
-# si se puede entonces ya elegir con alguno otro
-# 
-# 
-# primero probar con la maquina de soporte de vectores, 
-# si no se puede con eso regresarse al EDA
-# si se puede entonces ya elegir con alguno otro
-# 
-# 
-# 
-# reduccion de caracteristicas: entrenar el modelo con menos columnas
-# elegir las columnas con mayor correlacion
-
-
-# https://rstudio.github.io/reticulate/articles/r_markdown.html
-
-# RStudio
-# library(reticulate)
-# py_install("pandas")
-# py_install("matplotlib")
-# py_install("scikit-learn")
-# py_install("seaborn")
-# py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
-# reticulate::virtualenv_install(packages = c("numpy==1.8.0"))
-# system2(reticulate::py_exe(), c("-m", "pip", "uninstall -y", 'scikit-learn'))
-# otra  py_install("requests==2.32.3")
-
-
-# verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
-
-
 # ---------------------------------------------------------------------------
 # Cambia el directorio local al directorio donde están los archivos CSV.
 
@@ -677,6 +639,48 @@ sns.heatmap(
     square=True)
 plt.show()
 plt.close()
+
+
+xxxxx
+
+
+
+# https://posit.co/blog/three-ways-to-program-in-python-with-rstudio/
+# reticulate::py_install('pandas')
+# reticulate::py_install('matplotlib')
+# https://support.posit.co/hc/en-us/articles/1500007929061-Using-Python-with-the-RStudio-IDE
+
+
+# primero probar con la maquina de soporte de vectores, 
+# si no se puede con eso regresarse al EDA
+# si se puede entonces ya elegir con alguno otro
+# 
+# 
+# primero probar con la maquina de soporte de vectores, 
+# si no se puede con eso regresarse al EDA
+# si se puede entonces ya elegir con alguno otro
+# 
+# 
+# 
+# reduccion de caracteristicas: entrenar el modelo con menos columnas
+# elegir las columnas con mayor correlacion
+
+
+# https://rstudio.github.io/reticulate/articles/r_markdown.html
+
+# RStudio
+# library(reticulate)
+# py_install("pandas")
+# py_install("matplotlib")
+# py_install("scikit-learn")
+# py_install("seaborn")
+# py_install("imbalanced_learn") # metricas clasificador, genera datos faltantes
+# reticulate::virtualenv_install(packages = c("numpy==1.8.0"))
+# system2(reticulate::py_exe(), c("-m", "pip", "uninstall -y", 'scikit-learn'))
+# otra  py_install("requests==2.32.3")
+
+
+# verificar encoding https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
 
 
 
