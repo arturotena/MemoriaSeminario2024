@@ -235,13 +235,13 @@ def quita_duplicados(df_orig, df_busqueda, str_columna):
     los valores que estén repetidos en df_busqueda.
     Regresa: el DataFrame sin los registros encontrados."""
     df_columna = df_busqueda[[str_columna]]
-    ser_duplicados_booleans = df_columna.duplicated(keep=False)  # todos los valores duplicados
-    ser_valores_duplicados = df_columna.loc[ser_duplicados_booleans].drop_duplicates(keep='first')[str_columna]  # solo los duplicados
-    df_resultado = df_orig.query(str_columna + ' not in @ser_valores_duplicados')
-    cuenta_eliminados = df_orig.query(str_columna + ' in @ser_valores_duplicados').shape[0]
+    s_duplicados_booleans = df_columna.duplicated(keep=False)  # todos los valores duplicados
+    s_valores_duplicados = df_columna.loc[s_duplicados_booleans].drop_duplicates(keep='first')[str_columna]  # solo los duplicados
+    df_resultado = df_orig.query(str_columna + ' not in @s_valores_duplicados')
+    cuenta_eliminados = df_orig.query(str_columna + ' in @s_valores_duplicados').shape[0]
     cuenta_original = df.shape[0]
     pct_eliminado = (1 - (cuenta_original - cuenta_eliminados) / cuenta_original) * 100
-    print(f'Se eliminaron {cuenta_eliminados:,} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {ser_valores_duplicados.values}')
+    print(f'Se eliminaron {cuenta_eliminados:,} registros ({pct_eliminado:.1f}%) con {str_columna} duplicados: {s_valores_duplicados.values}')
     return df_resultado
 # NombresRelativos
 df_vars_nombres_relativos = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
@@ -605,35 +605,83 @@ if (df.loc[df['Tema'] == ''].shape[0] > 0 |
     raise Exception('No todos los renglones quedaron con tema')
 
 
-# 4.12 Elegir un horizonte por variable
-xxxxxx
+# 5. Correlaciones entre variables
+
+# 5.1. Correlación entre variables de interés
+
+temas=df_variables['Tema'].drop_duplicates(keep='first').sort_values().values
+imprime_array(temas)
+temas_interes=(temas[0], temas[1], temas[8], temas[9], temas[11], temas[21])
+imprime_array(temas_interes)
+df_variables_interes = df_variables.query('Tema in @temas_interes')
+
+print(df_variables_interes.shape)
+# En 6 temas hay 193 variables, filtrando las más representativas
+print(df_variables_interes.columns)
+
+print(df_variables_interes[['Tema', 'Horizonte']].drop_duplicates())
+# Elegir las de horizonte anual
+df_variables_interes = df_variables_interes.query('Horizonte == "anual"')
+print(df_variables_interes[['Tema', 'Horizonte']].drop_duplicates())
+
+print(df_variables_interes[['Tema', 'Cifra']].drop_duplicates())
+# Elegir las que tienen cifra de cierre del periodo
+df_variables_interes = df_variables_interes.query(
+    'Cifra == "al cierre del periodo"')
+print(df_variables_interes[['Tema', 'Cifra']].drop_duplicates())
+    
+print(df_variables_interes[['Tema', 'Unidad']].drop_duplicates())
+imprime_array(df_variables_interes['Unidad'].drop_duplicates())
+# Filtrar las que tienen unidad de porcentaje de probabilidad en rango
+df_variables_interes = df_variables_interes.query(
+    'Unidad != "porcentaje de probabilidad en rango"')
+print(df_variables_interes[['Tema', 'Unidad']].drop_duplicates())
+# !!! Aún hay probs. en rango
+
+variables_interes = list(df_variables_interes['IdVariable'])
+print(variables_interes)
+tmp = filter(lambda s : 'rango' not in s, variables_interes)
+print(tmp)
+# !!! No se regresa la lista sin probs. en rango
+
+df_interes = df.query('Fecha == "2024-09-01" & IdVariable in @variables_interes')
+df_interes.shape
+
+df_interes_varscols = df_interes.pivot(
+    index=['IdAnalista'],
+    columns=['IdVariable'],
+    values='Expectativa')
+
+df_interes_varscols.describe()
+
+corr = df_interes_varscols.corr()
+print(corr)
+
+# Correlación en enero 2024 de variables de interés
+import seaborn as sns
+mask = np.triu(np.ones_like(corr, dtype=bool))
+#f, ax = plt.subplots(figsize=(11, 9))
+cmap = sns.diverging_palette(230, 20, as_cmap=True)
+sns.heatmap(corr
+    , mask=mask
+    , cmap=cmap
+    #, vmax=.3
+    , center=0
+    #, square=True
+    #, linewidths=.5
+    #,cbar_kws={"shrink": .5}
+    )
+plt.show()
+plt.close()
 
 
-# # Opcional:
-# # Pasar las variables a columnas
-# print(list(df.columns.values))
-# df_variables_en_columnas=df.pivot(
-#     index=['Año', 'Mes', 'Fecha','IdAnalista'],
-#     columns=['Tema','Cifra', 'Horizonte', 'Unidad','IdVariable', 'Variable'],
-#     values='Expectativa')
-# 
-# print('DataFrame con variables en columnas:' +
-#       f'\n* Índice: {df_variables_en_columnas.index.names}' +
-#       f'\n* Columnas, multíndice: {df_variables_en_columnas.columns[:5].names}')
-# 
-# print('Ejemplo del DataFrame con variables en columnas, transpuesto:')
-# print(df_variables_en_columnas.sample(5, random_state=3).T)
-# 
-# print('Estadísticas descriptivas por IdVariable')
-# df_estad_descr_por_variable=df_variables_en_columnas.describe().T.sort_values(['Tema', 'IdVariable'])
-# print(df_estad_descr_por_variable.reset_index().to_string())
 
 
 
 
 
-# xxxxx
-# graficando
+
+# Graficando
 # 
 # plt.figure(1)
 # plt.subplot(211)
@@ -656,7 +704,7 @@ xxxxxx
 #         [['Fecha','Expectativa']].groupby('Fecha').mean())
 # plt.show()
 # plt.close()
-# 
+
 # 
 # https://machinelearningmastery.com/time-series-data-stationary-python/
 # df.query('Tema=="Valor del tipo de cambio promedio; durante el mes" \
@@ -964,3 +1012,13 @@ xxxxxx
 # https://medium.com/@zalarushirajsinh07/the-elbow-method-finding-the-optimal-number-of-clusters-d297f5aeb189
 
 # https://www.scikit-yb.org/en/latest/api/cluster/elbow.html
+
+
+# Para normalizar, por ejemplo Rescaling (min-max normalization), https://en.wikipedia.org/wiki/Feature_scaling
+
+# Kmeans con
+# Distancia Manhatan = el absoluto de la distancia
+# Distancia Chebyshev = el maximo de la distancia
+
+# TSNE https://www.datacamp.com/es/tutorial/introduction-t-sne
+# PCA https://www.datacamp.com/tutorial/principal-component-analysis-in-python
