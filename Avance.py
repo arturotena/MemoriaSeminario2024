@@ -207,7 +207,6 @@ print_df(df.dtypes)
 df['FechaEncuesta'] = pd.to_datetime(df['FechaEncuesta'], errors='raise')
 print('Después:')
 print_df(df.dtypes)
-# Observando los valores únicos por columna, no parece haber variables categóricas, sino sólo contínuas
 print('Valores únicos:')
 print_df(df.nunique())
 
@@ -749,9 +748,9 @@ plt.tight_layout()
 plt.show()
 plt.close()
 
-# En esta figura se demuestra que estuvo correcta la categorización por tema
-# dado que las variables del mismo tema y distinto horizonte muestran un
-# valor de correlación.
+# En esta figura se demuestra que estuvo correcta la clasificación de las
+# variables por tema dado que las variables del mismo tema y distinto horizonte
+# muestran un alto valor de correlación.
 
 
 
