@@ -11,6 +11,8 @@
     7.3.1
     
     
+    https://www.mybib.com/tools/apa-citation-generator
+    
     https://blog.jupyter.org/the-jupytext-menu-is-back-3e6212e8c090
     https://security.snyk.io/package/npm/jupyterlab-jupytext
     https://snyk.io/advisor/python/jupytext
@@ -25,6 +27,7 @@
     
 # referencias
 
+    https://repositorio.lasalle.mx/
     https://www.epa.gov/caddis/exploratory-data-analysis
 
     https://www.datacamp.com/tutorial/principal-component-analysis-in-python
@@ -33,6 +36,26 @@
 
 # -------------------------------------------------------------------------
 # PENDIENTES
+
+Metodo
+se utiliza python por su 
+
+cada tabla poner su codigo
+
+
+
+
+ya no:  [... alcance… Se agrupan las audiencias mediante técnicas de aprendizaje automático por inteligencia artificial y se comparan los grupos en cuanto a la cercanía de sus expectativas comparadas con el valor real de cada variable (quizás agregar al glosario: valor real de variable)...]
+
+ya no: objetivo> extienden pueden que la cercanía de las expectativas comparadas con el valor real de cada variable de cada grupo de audiencias depende del grupo al que pertenezca
+
+
+
+
+PENDIENTE: # para el momento de este trabajo se obtuvieron los datos... fui a la pagina...llenbando el formato que pide banxico y se descargaron....
+# definir en el marco teorico las bibliotecas y funciones y parámetros y formulas matematicas o proceso que realizan, y ya en el desarrollo decir: “lo que se definio en el marco teorico usamos esta fucion y estos son los resultados”
+
+[Dr. Almaraz: objetivo general y objetivo especifico, supongo falta objetivo especifico que es el desglose como que de los pasos]
 
 [idea: aprendizaje supervisado, que las columnas X sean expectativas de
 inflacion anual y la Y sea el valor de expectativa de inflacion a 2 anios]
