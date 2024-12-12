@@ -25,7 +25,10 @@
     
 # referencias
 
+    https://www.epa.gov/caddis/exploratory-data-analysis
+
     https://www.datacamp.com/tutorial/principal-component-analysis-in-python
+    https://www.datacamp.com/es/tutorial/introduction-t-sne
 
 
 # -------------------------------------------------------------------------
