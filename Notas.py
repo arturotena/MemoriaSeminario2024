@@ -34,6 +34,9 @@
 # -------------------------------------------------------------------------
 # PENDIENTES
 
+[idea: aprendizaje supervisado, que las columnas X sean expectativas de
+inflacion anual y la Y sea el valor de expectativa de inflacion a 2 anios]
+
 
 # xxxx
 # documentar los errores que fui encontrando
