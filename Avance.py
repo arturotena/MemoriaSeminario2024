@@ -1,3 +1,4 @@
+# %%
 # ---------------------------------------------------------------------------
 # Para instalar Python en RStudio
 #
@@ -5,6 +6,7 @@
 # reticulate::repl_python()
 
 
+# %%
 # ---------------------------------------------------------------------------
 # Verifica versión de Python para asegurar la reproducibilidad.
 import sys
@@ -16,6 +18,7 @@ else:
     reporta_error(f'Versión inesperada de Python: {version_python}.')
 
 
+# %%
 # ---------------------------------------------------------------------------
 # Funciones de apoyo.
 
@@ -33,6 +36,7 @@ def print_df(df):
     print(df)
 
 
+# %%
 # ---------------------------------------------------------------------------
 # Cambia el directorio local al directorio donde están los archivos CSV.
 
@@ -61,6 +65,7 @@ if not os.getcwd().endswith('datasets'):
     reporta_error('No se pudo encontrar el directorio de los data sets')
 
 
+# %%
 # ---------------------------------------------------------------------------
 # 1. Importar bibliotecas
 
@@ -118,6 +123,7 @@ pd.set_option('display.width', 150) # 150 caracteres de ancho de pantalla
 pd.set_option('display.max_colwidth', 200) # 200 caracteres por columna
 
 
+# %%
 # ----------------------------------------------------------------------------
 # 2. Adquisición de datos
 
@@ -126,7 +132,7 @@ df_exp2 = pd.read_csv('Microdatos_1999_01.csv', encoding='latin-1')
 df = pd.concat([df_exp1, df_exp2],
                ignore_index=True) # no toma en cuenta los índices al concatenar
 
-
+# %%
 # --------------------------------------------------------------------------
 # 3. Inspección inicial
 
@@ -175,9 +181,11 @@ print_df(df['NombreRelativoLargo']
              .apply(lambda s: len(s)).agg(['min', 'max']))
 
 
+# %%
 # --------------------------------------------------------------------------
 # 4. Análisis exploratorio de los datos (EDA)
 
+# %%
 # 4.1. Limpieza de los datos: búsqueda de duplicados.
 s_duplicados = df.duplicated(keep=False)
 cuenta_duplicados = s_duplicados[s_duplicados==True].size
@@ -185,6 +193,7 @@ print(f'Existen {cuenta_duplicados} renglones duplicados.')
 if cuenta_duplicados > 0:
     reporta_error('Hay renglones duplicados y no se trataron')
 
+# %%
 # 4.2. Reducción de columnas
 # Se eliminan las columnas con nombre 'Absolutas', porque son columnas derivadas
 # de la columna FechaEncuesta y las columnas con nombre 'Relativo' y, por tanto,
@@ -192,6 +201,7 @@ if cuenta_duplicados > 0:
 df = df.drop(['NombreAbsolutoCorto', 'NombreAbsolutoLargo'], axis = 1)
 print(df.dtypes)
 
+# %%
 # 4.3. Conversión de tipo de datos
 print('Antes:')
 print_df(df.dtypes)
@@ -202,11 +212,13 @@ print_df(df.dtypes)
 print('Valores únicos:')
 print_df(df.nunique())
 
+# %%
 # 4.4. Columnas calculadas
 df['Año'] = df['FechaEncuesta'].dt.year
 df['Mes'] = df['FechaEncuesta'].dt.month # número del mes
 print_df(df.dtypes)
 
+# %%
 # 4.5. Simplificación de nombres de columnas
 print(f'Antes:\n{df.columns}')
 df=df.rename(columns={
@@ -221,6 +233,7 @@ df=df.rename(columns={
 print(f'Después:\n{df.columns}')
 print_df(df.sample(4))
 
+# %%
 # 4.6. Valores faltantes
 s_faltantes_por_columna = df.isnull().sum()
 print_df(s_faltantes_por_columna)
@@ -233,6 +246,7 @@ else:
 # Esto explica la inexistencia de valores faltantes, aún cuando se tiene
 # conocimiento previo que no todos los analistas contestan todas las preguntas.
 
+# %%
 # 4.7. Búsqueda de renglones duplicados considerar en cuenta la columna Dato.
 # Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
@@ -256,6 +270,7 @@ print(f'Antes {cuenta_original:,} renglones, ahora {cuenta_sin_dups:,}' +
       f' renglones; es decir '
       f'{porciento:.1f}% menos.')
 
+# %%
 # 4.8. Búsqueda de incongruencias en las variables
 # Un valor en la columna IdVariable debe tener una sola Variable y viceversa;
 # es decir estas columnas deben tener una correspondencia biunívoca.
@@ -288,6 +303,7 @@ df_vars = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
 df=quita_duplicados(df, df_vars, 'IdVariable')
 df=quita_duplicados(df, df_vars, 'Variable')
 
+# %%
 # 4.9. Orden de renglones y columnas
 # Renglones: ordenar por fecha, variable, analista.
 print('Antes:\n',df['Año'].unique())
@@ -304,8 +320,10 @@ print(df.columns)
 print(df.head())
 
 
+# %%
 # 5. Clasificación de las variables
 
+# %%
 df_variables=(df[['IdVariable','Variable']]
                   .drop_duplicates(keep='first')
                   .reindex(columns=['IdVariable','Variable'])
@@ -313,6 +331,25 @@ df_variables=(df[['IdVariable','Variable']]
 print(df_variables.shape)
 print_df(df_variables.sample(14).sort_values(by='IdVariable'))
 
+# %%
+# Calcula el prefijo idóneo de palabras para clasificar.
+longitud = range(1, 16)
+n_conceptos=list(map(
+    lambda n: df_variables['Variable']
+                  .apply(lambda s: ' '.join(s.split(' ')[:n]))
+                  .drop_duplicates().shape[0], longitud))
+fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
+fig.suptitle('Número de palabras iniciales vs. número de categorías', fontsize=16)
+plt.plot(longitud, n_conceptos, 'o-')
+plt.xlabel('Número de palabras iniciales')
+plt.ylabel('Número de categorías encontradas')
+plt.grid(True)
+for a,b in zip(longitud, n_conceptos): 
+    plt.text(a, b, str(b), ha='right', verticalalignment='bottom')
+plt.show()
+plt.close()
+
+# %%
 # Calcula el número idóneo de longitud del prefijo para clasificar.
 longitud = range(1, 16)
 n_conceptos=list(map(lambda n: df_variables['Variable']
@@ -332,31 +369,13 @@ for a,b in zip(longitud, n_conceptos):
 plt.show()
 plt.close()
 
-# Calcula el número idóneo de número de palabras para clasificar.
-longitud = range(1, 16)
-n_conceptos=list(map(lambda n: df_variables['Variable']
-                                   .apply(lambda s: ' '.join(s.split(' ')[:2])
-                                   .drop_duplicates().shape[0],
-                               longitud))
-fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
-fig.suptitle('Número de palabras iniciales vs. número de categorías', fontsize=16)
-plt.plot(longitud, n_conceptos, 'o-')
-plt.xlabel('Número de palabras iniciales')
-plt.ylabel('Número de categorías encontradas')
-plt.grid(True)
-for a,b in zip(longitud, n_conceptos): 
-    plt.text(a, b, str(b), ha='right', verticalalignment='bottom')
-plt.show()
-plt.close()
-
+# %%
 # Crea las columnas
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(
     lambda s: s[:7])
-df_variables['DosPalabras']=df_variables['Variable'].apply(
-    lambda s: ' '.join(s.split(' ')[:2]))
-print(df_variables['PrimerasLetras'].drop_duplicates().shape[0])
-print(df_variables['DosPalabras'].drop_duplicates().shape[0])
+print_df(df_variables['PrimerasLetras'].drop_duplicates())
 
+# %%
 # Cada tema tiene una o más variables para distintos horizontes de expectativa.
 df_variables['Tema']=''
 df_variables['Cifra']=''
@@ -668,8 +687,9 @@ else:
     imprime_siguentes_variables(df_variables)
     reporta_error('Existen variables que no se les ha asignado tema')
 
-# Quita las variables temporales que se usaron para el tema.
-df_variables = df_variables.drop(['PrimerasLetras', 'DosPalabras'], axis = 1)
+# %%
+# Quita la columna del prefijo que se usó para encontrar categorías.
+df_variables = df_variables.drop(['PrimerasLetras'], axis = 1)
 
 numero_temas = df_variables[['Tema']].drop_duplicates(keep='first').shape[0]
 if numero_temas != 26:
@@ -694,6 +714,7 @@ print_df(df_variables.groupby(['Tema'])
             .rename('Número de Variables')
             .sort_values(ascending=False).head(4))
 
+# %%
 # Asigna tema, cifra, horizonte, y unidad a los renglones del data set.
 df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
 df.columns
@@ -715,8 +736,10 @@ print('Agrupaciones del DataFrame:')
 print_df(df[['Tema', 'Unidad', 'Cifra', 'Horizonte']].drop_duplicates())
              
 
+# %%
 # 5. Correlaciones entre variables
 
+# %%
 # 5.1. Correlación entre variables de interés
 
 # Elige algunas variables de temas de interés
@@ -768,6 +791,7 @@ df_interes_varscols.describe()
 corr = df_interes_varscols.corr()
 print(corr)
 
+# %%
 # Correlación en enero 2024 de variables de interés
 fig, ax = plt.subplots(figsize=(10, 5))
 paleta_divergente=sns.color_palette("vlag", as_cmap=True)
