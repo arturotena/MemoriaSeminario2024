@@ -190,10 +190,9 @@ print_df(df['NombreRelativoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
 # 4.1. Limpieza de los datos: búsqueda de duplicados.
 s_duplicados = df.duplicated(keep=False)
 cuenta_duplicados = s_duplicados[s_duplicados==True].size
+print(f'Existen {cuenta_duplicados} renglones duplicados.')
 if cuenta_duplicados > 0:
     reporta_error('Hay renglones duplicados y no se trataron')
-else:
-    print('No existen renglones duplicados')
 
 # 4.2. Reducción de columnas
 # Se eliminan las columnas con nombre 'Absolutas', porque son columnas derivadas
