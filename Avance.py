@@ -113,9 +113,9 @@ if sns.__version__ != '0.13.2':
 np.random.seed(5)
 
 # Se establece el número de columnas a visualizar, y otros valores relacionados.
-pd.set_option('display.max_columns', 8)
-# pd.set_option('display.width', 150)
-# pd.set_option('display.max_colwidth', 200)
+pd.set_option('display.max_columns', 8) # 8 columnas por DataFrame
+pd.set_option('display.width', 150) # 150 caracteres de ancho de pantalla
+pd.set_option('display.max_colwidth', 200) # 200 caracteres por columna
 
 
 # ----------------------------------------------------------------------------
@@ -165,17 +165,14 @@ print('Visualización de estadísticas descriptivas de las columnas numéricas:'
 print_df(df.describe())
 # Se observa que existe el IdAnalista con valor a cero.
 
-print('Mínima y máxima longitud de NombreAbsolutoCorto:')
-print_df(df['NombreAbsolutoCorto'].apply(lambda s: len(s)).agg(['min', 'max']))
-
-print('Mínima y máxima longitud de NombreAbsolutoLargo:')
-print_df(df['NombreAbsolutoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
-
-print('Mínima y máxima longitud de NombreRelativoCorto:')
-print_df(df['NombreRelativoCorto'].apply(lambda s: len(s)).agg(['min', 'max']))
-
-print('Mínima y máxima longitud de NombreRelativoLargo:')
-print_df(df['NombreRelativoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
+print_df(df['NombreAbsolutoCorto']
+             .apply(lambda s: len(s)).agg(['min', 'max']))
+print_df(df['NombreAbsolutoLargo']
+             .apply(lambda s: len(s)).agg(['min', 'max']))
+print_df(df[NombreRelativoCorto]
+             .apply(lambda s: len(s)).agg(['min', 'max']))
+print_df(df['NombreRelativoLargo']
+             .apply(lambda s: len(s)).agg(['min', 'max']))
 
 
 # --------------------------------------------------------------------------
@@ -240,10 +237,11 @@ else:
 # Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
                .duplicated(keep=False)
-
+df.columns
 print('Ejemplo de datos duplicados:')
-print_df(df[s_duplicados].sort_values(
-            by=['Año','Mes', 'Variable', 'IdAnalista']).head(6))
+print_df(df[s_duplicados]
+             .sort_values(by=['Fecha', 'Variable', 'IdAnalista'])
+             .head(6))
 
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,}'
       f' registros duplicados, con la(s) variable(s):\n',
