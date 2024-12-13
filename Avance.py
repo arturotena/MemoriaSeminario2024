@@ -311,7 +311,7 @@ df_variables=(df[['IdVariable','Variable']]
                   .reindex(columns=['IdVariable','Variable'])
                   .sort_values(['Variable']))
 print(df_variables.shape)
-print_df(df_variables.sample(15).sort_values(by='IdVariable'))
+print_df(df_variables.sample(14).sort_values(by='IdVariable'))
 
 # Averigua el número idóneo de longitud del prefijo para clasificar.
 longitud = range(1, 16)
@@ -320,13 +320,15 @@ n_conceptos=list(map(lambda n: df_variables['Variable']
                                    .drop_duplicates().shape[0],
                                longitud))
 fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
-fig.suptitle('Longitud del prefijo vs. número de categorías', fontsize=16)
+fig.suptitle('Longitud del prefijo vs. número de categorías',
+             fontsize=16)
 plt.plot(longitud, n_conceptos, 'o-')
 plt.xlabel('Número de letras del prefijo')
 plt.ylabel('Número de categorías encontradas')
 plt.grid(True)
 for a,b in zip(longitud, n_conceptos): 
-    plt.text(a, b, str(b), ha='right', verticalalignment='bottom')
+    plt.text(a, b, str(b),
+             ha='right', verticalalignment='bottom')
 plt.show()
 plt.close()
 
@@ -347,6 +349,7 @@ for a,b in zip(longitud, n_conceptos):
 plt.show()
 plt.close()
 
+# Crea las columnas
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(
     lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(
