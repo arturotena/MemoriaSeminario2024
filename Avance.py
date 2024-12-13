@@ -135,10 +135,10 @@ df = pd.concat([df_exp1, df_exp2],
 
 # Dimensiones de los datos
 rows, cols = df.shape
-print(f'Hay {cols} columnas y {rows:,} registros.')
+print(f'Hay {cols} columnas y {rows:,} renglones.')
 if cols != 7: reporta_error(f"Se detectaron menos columnas que antes.")
-if rows <= 1500000: reporta_error(f"Se detectaron menos registros que antes.")
-if rows > 1600000: reporta_error(f"Se detectaron más registros que antes.")
+if rows <= 1500000: reporta_error(f"Se detectaron menos renglones que antes.")
+if rows > 1600000: reporta_error(f"Se detectaron más renglones que antes.")
 
 print('Los primeros 3 renglones:')
 print_df(df.head(3))
@@ -169,7 +169,7 @@ print_df(df['NombreAbsolutoCorto']
              .apply(lambda s: len(s)).agg(['min', 'max']))
 print_df(df['NombreAbsolutoLargo']
              .apply(lambda s: len(s)).agg(['min', 'max']))
-print_df(df[NombreRelativoCorto]
+print_df(df['NombreRelativoCorto']
              .apply(lambda s: len(s)).agg(['min', 'max']))
 print_df(df['NombreRelativoLargo']
              .apply(lambda s: len(s)).agg(['min', 'max']))
@@ -244,7 +244,7 @@ print_df(df[s_duplicados]
              .head(6))
 
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,}'
-      f' registros duplicados, con la(s) variable(s):\n',
+      f' renglones duplicados, con la(s) variable(s):\n',
       df[s_duplicados][['IdVariable', 'Variable']]
           .drop_duplicates(keep='first'))
 cuenta_original=df.shape[0]
@@ -252,8 +252,8 @@ df=df.drop_duplicates(subset=['Fecha', 'IdVariable',
                       'Variable', 'IdAnalista'], keep=False)
 cuenta_sin_dups=df.shape[0]
 porciento=(cuenta_original-cuenta_sin_dups)/cuenta_original*100
-print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,}' +
-      f' registros; es decir '
+print(f'Antes {cuenta_original:,} renglones, ahora {cuenta_sin_dups:,}' +
+      f' renglones; es decir '
       f'{porciento:.1f}% menos.')
 
 # 4.8. Búsqueda de incongruencias en las variables
@@ -266,19 +266,22 @@ print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,}' +
 # en todo el DataFrame.
 
 def quita_duplicados(df_orig, df_busqueda, str_columna):
-    """Elimina de df_orig los registros que tengan en la str_columna
+    """Elimina de df_orig los renglones que tengan en la str_columna
     los valores que estén repetidos en df_busqueda.
-    Regresa: el DataFrame sin los registros encontrados."""
+    Regresa: el DataFrame sin los renglones encontrados."""
     df_columna = df_busqueda[[str_columna]]
-    s_duplicados_booleans = df_columna.duplicated(keep=False)  # todos los valores duplicados
-    s_valores_duplicados = df_columna.loc[s_duplicados_booleans].drop_duplicates(keep='first')[str_columna]
-    # s_valores_duplicados tiene solo los duplicados
-    df_resultado = df_orig.query(str_columna + ' not in @s_valores_duplicados')
-    cuenta_eliminados = df_orig.query(str_columna + ' in @s_valores_duplicados').shape[0]
+    # todos los valores duplicados
+    s_duplicados_booleanos = df_columna.duplicated(keep=False)
+    s_duplicados = (df_columna.loc[s_duplicados_booleanos]
+                        .drop_duplicates(keep='first')[str_columna])
+    # s_duplicados tiene solo los duplicados
+    df_resultado = df_orig.query(str_columna + ' not in @s_duplicados')
+    cuenta_eliminados = df_orig.query(str_columna + ' in @s_duplicados'
+                            ).shape[0]
     cuenta_original = df.shape[0]
-    pct_eliminado = (1 - (cuenta_original - cuenta_eliminados) / cuenta_original) * 100
-    print(f'Se eliminaron {cuenta_eliminados:,} registros ({pct_eliminado:.1f}%)'
-          f' con {str_columna} duplicados:\n{s_valores_duplicados.values}')
+    pct = (1-(cuenta_original-cuenta_eliminados)/cuenta_original)*100
+    print(f'Se eliminaron {cuenta_eliminados:,} renglones ({pct:.1f}%)'
+          f' con {str_columna} duplicados:\n{s_duplicados.values}')
     return df_resultado
 
 df_vars = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
