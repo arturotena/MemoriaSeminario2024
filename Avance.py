@@ -233,10 +233,10 @@ else:
 # Esto explica la inexistencia de valores faltantes, aún cuando se tiene
 # conocimiento previo que no todos los analistas contestan todas las preguntas.
 
-# 4.7. Búsqueda de renglones duplicados sin tomar en cuenta la columna Dato.
+# 4.7. Búsqueda de renglones duplicados considerar en cuenta la columna Dato.
 # Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
-               .duplicated(keep=False)
+                 .duplicated(keep=False)
 df.columns
 print('Ejemplo de datos duplicados:')
 print_df(df[s_duplicados]
