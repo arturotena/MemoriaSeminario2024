@@ -243,8 +243,7 @@ s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
 
 print('Ejemplo de datos duplicados:')
 print_df(df[s_duplicados].sort_values(
-            by=['Año','Mes', 'Variable', 'IdAnalista']
-        ).head(6))
+            by=['Año','Mes', 'Variable', 'IdAnalista']).head(6))
 
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,}'
       f' registros duplicados, con la(s) variable(s):\n',
