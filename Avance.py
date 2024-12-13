@@ -311,6 +311,8 @@ df_variables=(df[['IdVariable','Variable']]
                   .drop_duplicates(keep='first')
                   .reindex(columns=['IdVariable','Variable'])
                   .sort_values(['Variable']))
+print(df_variables.shape)
+print_df(df_variables.sample(20))
 
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 # Se probó con distinto número de letras iniciales hasta encontrar un número
