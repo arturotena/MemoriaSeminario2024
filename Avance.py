@@ -127,13 +127,8 @@ pd.set_option('display.max_columns', 8)
 # ----------------------------------------------------------------------------
 # 2. Adquisición de datos
 
-# Path de datasets locales
-Microdatos_2020_01_csv_path = 'Microdatos_2020_01.csv'
-Microdatos_1999_01_csv_path = 'Microdatos_1999_01.csv'
-
-# Crea DataFrame con toda la historia
-df_exp1 = pd.read_csv(Microdatos_2020_01_csv_path, encoding='latin-1')
-df_exp2 = pd.read_csv(Microdatos_1999_01_csv_path, encoding='latin-1')
+df_exp1 = pd.read_csv('Microdatos_2020_01.csv', encoding='latin-1')
+df_exp2 = pd.read_csv('Microdatos_1999_01.csv', encoding='latin-1')
 df = pd.concat([df_exp1, df_exp2],
                ignore_index=True) # no toma en cuenta los índices al concatenar
 
