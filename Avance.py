@@ -177,13 +177,20 @@ print_df(df['NombreAbsolutoCorto'].apply(lambda s: len(s)).agg(['min', 'max']))
 print('Mínima y máxima longitud de NombreAbsolutoLargo:')
 print_df(df['NombreAbsolutoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
 
+print('Mínima y máxima longitud de NombreRelativoCorto:')
+print_df(df['NombreRelativoCorto'].apply(lambda s: len(s)).agg(['min', 'max']))
+
+print('Mínima y máxima longitud de NombreRelativoLargo:')
+print_df(df['NombreRelativoLargo'].apply(lambda s: len(s)).agg(['min', 'max']))
+
 
 # --------------------------------------------------------------------------
 # 4. Preparación de los datos
 
 # 4.1. Limpieza de los datos: búsqueda de duplicados.
-s_duplicados=df.duplicated(keep=False)
-if s_duplicados[s_duplicados==True].size > 0:
+s_duplicados = df.duplicated(keep=False)
+cuenta_duplicados = s_duplicados[s_duplicados==True].size
+if cuenta_duplicados > 0:
     reporta_error('Hay renglones duplicados y no se trataron')
 else:
     print('No existen renglones duplicados')
