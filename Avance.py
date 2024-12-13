@@ -245,17 +245,18 @@ print_df(df[s_duplicados]
 
 print(f'Existen: {s_duplicados[s_duplicados==True].size:,}'
       f' registros duplicados, con la(s) variable(s):\n',
-      df[s_duplicados][['IdVariable', 'Variable']
-      ].drop_duplicates(keep='first'))
+      df[s_duplicados][['IdVariable', 'Variable']]
+          .drop_duplicates(keep='first'))
 cuenta_original=df.shape[0]
 df=df.drop_duplicates(subset=['Fecha', 'IdVariable',
                       'Variable', 'IdAnalista'], keep=False)
 cuenta_sin_dups=df.shape[0]
+porciento=(cuenta_original-cuenta_sin_dups)/cuenta_original*100
 print(f'Antes {cuenta_original:,} registros, ahora {cuenta_sin_dups:,}' +
       f' registros; es decir '
-      f'{(cuenta_original-cuenta_sin_dups)/cuenta_original*100:.1f}% menos.')
+      f'{porciento:.1f}% menos.')
 
-# 4.8. Limpieza de los datos: Busca incongruencias en las variables.
+# 4.8. Búsqueda de incongruencias en las variables
 # Un valor en la columna IdVariable debe tener una sola Variable y viceversa;
 # es decir estas columnas deben tener una correspondencia biunívoca.
 #
