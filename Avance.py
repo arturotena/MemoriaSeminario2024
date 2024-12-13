@@ -304,8 +304,7 @@ print(df.columns)
 print(df.head())
 
 
-# 5. Agrupación de las variables por tema
-# Cada tema tiene una o más variables para distintos horizontes de expectativa.
+# 5. Clasificación de las variables
 
 df_variables=(df[['IdVariable','Variable']]
                   .drop_duplicates(keep='first')
@@ -314,17 +313,48 @@ df_variables=(df[['IdVariable','Variable']]
 print(df_variables.shape)
 print_df(df_variables.sample(15).sort_values(by='IdVariable'))
 
-df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
-# Se probó con distinto número de letras iniciales hasta encontrar un número
-# que agrupara suficientemente a las variables.
-print(df_variables['PrimerasLetras'].drop_duplicates().shape[0])
+# Averigua el número idóneo de longitud del prefijo para clasificar.
+longitud = range(1, 16)
+n_conceptos=list(map(lambda n: df_variables['Variable']
+                                   .apply(lambda s: s[:n])
+                                   .drop_duplicates().shape[0],
+                               longitud))
+fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
+fig.suptitle('Longitud del prefijo vs. número de categorías', fontsize=16)
+plt.plot(longitud, n_conceptos, 'o-')
+plt.xlabel('Número de letras del prefijo')
+plt.ylabel('Número de categorías encontradas')
+plt.grid(True)
+for a,b in zip(longitud, n_conceptos): 
+    plt.text(a, b, str(b), ha='right', verticalalignment='bottom')
+plt.show()
+plt.close()
 
+# Averigua el número idóneo de número de palabras iniciales para clasificar.
+longitud = range(1, 16)
+n_conceptos=list(map(lambda n: df_variables['Variable']
+                                   .apply(lambda s: ' '.join(s.split(' ')[:2])
+                                   .drop_duplicates().shape[0],
+                               longitud))
+fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
+fig.suptitle('Número de palabras iniciales vs. número de categorías', fontsize=16)
+plt.plot(longitud, n_conceptos, 'o-')
+plt.xlabel('Número de palabras iniciales')
+plt.ylabel('Número de categorías encontradas')
+plt.grid(True)
+for a,b in zip(longitud, n_conceptos): 
+    plt.text(a, b, str(b), ha='right', verticalalignment='bottom')
+plt.show()
+plt.close()
+
+df_variables['PrimerasLetras']=df_variables['Variable'].apply(
+    lambda s: s[:7])
 df_variables['DosPalabras']=df_variables['Variable'].apply(
     lambda s: ' '.join(s.split(' ')[:2]))
-# De forma análoga, se probó con 1, 2, 3 y 4 palabras, y se encontró que 2
-# era el número que permitía agrupar mejor las variables.
+print(df_variables['PrimerasLetras'].drop_duplicates().shape[0])
 print(df_variables['DosPalabras'].drop_duplicates().shape[0])
 
+# Cada tema tiene una o más variables para distintos horizontes de expectativa.
 df_variables['Tema']=''
 df_variables['Cifra']=''
 df_variables['Horizonte']=''
