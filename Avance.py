@@ -210,13 +210,13 @@ print_df(df.dtypes)
 # 4.5. Simplificación de nombres de columnas
 print(f'Antes:\n{df.columns}')
 df=df.rename(columns={
-    'FechaEncuesta'      :'Fecha',
-    'NombreRelativoCorto':'IdVariable',
-    'NombreRelativoLargo':'Variable',
-    'IdAnalista'         :'IdAnalista',
-    'Dato'               :'Expectativa',
-    'AñoEncuesta'        :'Año',
-    'MesEncuesta'        :'Mes'
+    'FechaEncuesta'       : 'Fecha',
+    'NombreRelativoCorto' : 'IdVariable',
+    'NombreRelativoLargo' : 'Variable',
+    'IdAnalista'          : 'IdAnalista',
+    'Dato'                : 'Expectativa',
+    'AñoEncuesta'         : 'Año',
+    'MesEncuesta'         : 'Mes'
 })
 print(f'Después:\n{df.columns}')
 print_df(df.sample(4))
@@ -312,7 +312,7 @@ df_variables=(df[['IdVariable','Variable']]
                   .reindex(columns=['IdVariable','Variable'])
                   .sort_values(['Variable']))
 print(df_variables.shape)
-print_df(df_variables.sample(20))
+print_df(df_variables.sample(15).sort_values(by='IdVariable'))
 
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(lambda s: s[:7])
 # Se probó con distinto número de letras iniciales hasta encontrar un número
