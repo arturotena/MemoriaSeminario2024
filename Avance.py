@@ -116,7 +116,7 @@ if sns.__version__ != '0.13.2':
     reporta_error(f'Versión inesperada de Seaborn: {sns.__version__}.')
 
 # Se establece la semilla fija para asegurar reproducibilidad de los resultados.
-np.random.seed(2)
+np.random.seed(5)
 
 # Se establece el número de columnas a visualizar, y otros valores relacionados.
 pd.set_option('display.max_columns', 8)
