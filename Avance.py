@@ -3,12 +3,6 @@
 #
 # library(reticulate)
 # reticulate::repl_python()
-#
-# Otra opción podría ser:
-# library(reticulate)
-# reticulate::install_python(version = "3.12.5")
-#
-# Ayuda: https://rstudio.github.io/reticulate/reference/install_python.html
 
 
 # ---------------------------------------------------------------------------
@@ -211,12 +205,12 @@ print_df(df.dtypes)
 print('Valores únicos:')
 print_df(df.nunique())
 
-# 4.4. Agregar columnas calculadas
+# 4.4. Columnas calculadas
 df['Año'] = df['FechaEncuesta'].dt.year
 df['Mes'] = df['FechaEncuesta'].dt.month # número del mes
 print_df(df.dtypes)
 
-# 4.5. Simplificar nombres columnas
+# 4.5. Simplificación de nombres de columnas
 print(f'Antes:\n{df.columns}')
 df=df.rename(columns={
     'FechaEncuesta'      :'Fecha',
@@ -242,8 +236,8 @@ else:
 # Esto explica la inexistencia de valores faltantes, aún cuando se tiene
 # conocimiento previo que no todos los analistas contestan todas las preguntas.
 
-# 4.7. Limpieza de los datos: busca duplicados sin contar la columna Dato:
-# sólo debería haber un dato de expectativa para cada fecha, variable, analista.
+# 4.7. Búsqueda de renglones duplicados sin tomar en cuenta la columna Dato.
+# Sólo debería haber un dato de expectativa para cada fecha, variable, analista.
 s_duplicados=df[['Fecha', 'IdVariable', 'Variable', 'IdAnalista']] \
                .duplicated(keep=False)
 
