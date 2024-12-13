@@ -313,7 +313,7 @@ df_variables=(df[['IdVariable','Variable']]
 print(df_variables.shape)
 print_df(df_variables.sample(14).sort_values(by='IdVariable'))
 
-# Averigua el número idóneo de longitud del prefijo para clasificar.
+# Calcula el número idóneo de longitud del prefijo para clasificar.
 longitud = range(1, 16)
 n_conceptos=list(map(lambda n: df_variables['Variable']
                                    .apply(lambda s: s[:n])
@@ -332,7 +332,7 @@ for a,b in zip(longitud, n_conceptos):
 plt.show()
 plt.close()
 
-# Averigua el número idóneo de número de palabras iniciales para clasificar.
+# Calcula el número idóneo de número de palabras para clasificar.
 longitud = range(1, 16)
 n_conceptos=list(map(lambda n: df_variables['Variable']
                                    .apply(lambda s: ' '.join(s.split(' ')[:2])
@@ -685,9 +685,14 @@ print('Unidad:')
 imprime_unidades()
 
 print('Cuántas variables tiene cada tema:')
-print(df_variables.groupby(['Tema'])['Variable'].count())
+print_df(df_variables.groupby(['Tema'])
+            ['Variable'].count()
+            .rename('Número de Variables'))
 print('Los 5 temas con más variables:')
-print(df_variables.groupby(['Tema'])['Variable'].count().sort_values(ascending=False).head(4))
+print_df(df_variables.groupby(['Tema'])
+            ['Variable'].count()
+            .rename('Número de Variables')
+            .sort_values(ascending=False).head(4))
 
 # Asigna tema, cifra, horizonte, y unidad a los renglones del data set.
 df = df.merge(df_variables, how='left', on=['IdVariable','Variable'])
@@ -707,9 +712,8 @@ print('Número de renglones del DataFrame por tema:')
 print_df(df.groupby(['Tema'])['Expectativa'].count()
              .rename('Número de Expectativas'))
 print('Agrupaciones del DataFrame:')
-print_df(df.groupby(['Tema', 'Unidad', 'Cifra'])['Expectativa'].count()
-             .rename('Número de Expectativas'))
-
+print_df(df[['Tema', 'Unidad', 'Cifra', 'Horizonte']].drop_duplicates())
+             
 
 # 5. Correlaciones entre variables
 
