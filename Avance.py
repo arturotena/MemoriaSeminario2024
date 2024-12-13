@@ -176,7 +176,7 @@ print_df(df['NombreRelativoLargo']
 
 
 # --------------------------------------------------------------------------
-# 4. Preparación de los datos
+# 4. Análisis exploratorio de los datos (EDA)
 
 # 4.1. Limpieza de los datos: búsqueda de duplicados.
 s_duplicados = df.duplicated(keep=False)
@@ -288,21 +288,23 @@ df_vars = df[['IdVariable', 'Variable']].drop_duplicates(keep='first')
 df=quita_duplicados(df, df_vars, 'IdVariable')
 df=quita_duplicados(df, df_vars, 'Variable')
 
-# 4.9. Orden
+# 4.9. Orden de renglones y columnas
 # Renglones: ordenar por fecha, variable, analista.
 print('Antes:\n',df['Año'].unique())
-df=df.sort_values(by=['Año','Mes', 'Variable', 'IdAnalista'])
+df = df.sort_values(by=['Año','Mes', 'Variable', 'IdAnalista'])
 print('Después:\n',df['Año'].unique())
 # Columnas
 print('Antes:')
 print(df.columns)
 print(df.head())
-df = df.reindex(columns=['Fecha','Año', 'Mes','IdVariable','Variable','IdAnalista','Expectativa'])
+df = df.reindex(columns=['Fecha','Año', 'Mes', 'IdVariable', 'Variable',
+                         'IdAnalista', 'Expectativa'])
 print('\nDespués:')
 print(df.columns)
 print(df.head())
 
-# 4.10. Agrupación de las variables por tema
+
+# 5. Agrupación de las variables por tema
 # Cada tema tiene una o más variables para distintos horizontes de expectativa.
 
 df_variables=(df[['IdVariable','Variable']]
