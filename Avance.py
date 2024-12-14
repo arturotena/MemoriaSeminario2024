@@ -334,10 +334,10 @@ print_df(df_variables.sample(14).sort_values(by='IdVariable'))
 # %%
 # Calcula el prefijo idóneo de palabras para clasificar.
 longitud = range(1, 16)
-n_conceptos=list(map(
-    lambda n: df_variables['Variable']
-                  .apply(lambda s: ' '.join(s.split(' ')[:n]))
-                  .drop_duplicates().shape[0], longitud))
+n_conceptos=list(map(lambda n: df_variables['Variable']
+                             .apply(lambda s: ' '.join(s.split(' ')[:n]))
+                             .drop_duplicates().shape[0],
+                     longitud))
 fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
 fig.suptitle('Número de palabras iniciales vs. número de categorías', fontsize=16)
 plt.plot(longitud, n_conceptos, 'o-')
@@ -355,7 +355,7 @@ longitud = range(1, 16)
 n_conceptos=list(map(lambda n: df_variables['Variable']
                                    .apply(lambda s: s[:n])
                                    .drop_duplicates().shape[0],
-                               longitud))
+                     longitud))
 fig, ax = plt.subplots(figsize=(3, 1), layout='constrained')
 fig.suptitle('Longitud del prefijo vs. número de categorías',
              fontsize=16)
@@ -370,13 +370,13 @@ plt.show()
 plt.close()
 
 # %%
-# Crea las columnas
+# Crea la columna del prefijo, y se obtienen las categorías
 df_variables['PrimerasLetras']=df_variables['Variable'].apply(
     lambda s: s[:7])
 print_df(df_variables['PrimerasLetras'].drop_duplicates())
 
 # %%
-# Cada tema tiene una o más variables para distintos horizontes de expectativa.
+# Generación de características.
 df_variables['Tema']=''
 df_variables['Cifra']=''
 df_variables['Horizonte']=''
