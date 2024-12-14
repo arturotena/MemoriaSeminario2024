@@ -849,7 +849,7 @@ print_df(df_variables_interes[['IdVariable','Variable']])
 
 # Se elije una fecha, y se obtiene la correlación de dichas variables
 df_interes = df.query('Fecha == "2024-09-01" & IdVariable in @variables_interes')
-print(df_interes.shape)
+print_df(df_interes[['IdVariable','Variable']].drop_duplicates())
 
 df_interes_varscols = df_interes.pivot(
     index=['IdAnalista'],
