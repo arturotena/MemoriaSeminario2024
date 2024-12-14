@@ -34,6 +34,9 @@
     https://www.datacamp.com/tutorial/principal-component-analysis-in-python
     https://www.datacamp.com/es/tutorial/introduction-t-sne
 
+https://www.geeksforgeeks.org/pearson-correlation-coefficient/
+https://libguides.library.kent.edu/SPSS/PearsonCorr
+https://www.ibm.com/mx-es/topics/exploratory-data-analysis
 
 # -------------------------------------------------------------------------
 # PENDIENTES
