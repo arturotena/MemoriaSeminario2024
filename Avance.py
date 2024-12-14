@@ -371,9 +371,9 @@ plt.close()
 
 # %%
 # Crea la columna del prefijo, y se obtienen las categorías
-df_variables['PrimerasLetras']=df_variables['Variable'].apply(
+df_variables['Prefijo']=df_variables['Variable'].apply(
     lambda s: s[:7])
-print_df(df_variables['PrimerasLetras'].drop_duplicates())
+print_df(df_variables['Prefijo'].drop_duplicates())
 
 # %%
 # Generación de características.
@@ -393,12 +393,16 @@ def imprime_array(s, n=-1, width=-1):
         print(f'{c} -> {valor}')
 
 def imprime_siguentes_variables(df_variables, n=-1, width=-1):
-  primeras_letras=df_variables.query('Tema==""').head(1)['PrimerasLetras'].values[0]
-  print(f'Variables con prefijo "{primeras_letras}":')
-  imprime_array(df_variables.loc[
-            (df_variables['PrimerasLetras'] == primeras_letras) &
-            (df_variables['Tema'] == ''),
-        'Variable'].sort_values().values, n, width)
+    '''
+    Imprime las Variables que inicien con el siguiente prefijo
+    que no tenga Tema asignado.
+    '''
+    prefjio=df_variables.query('Tema==""').head(1)['Prefijo'].values[0]
+    print(f'Variables con prefijo "{prefjio}":')
+    imprime_array(df_variables.loc[
+                  (df_variables['Prefijo'] == prefjio) &
+                  (df_variables['Tema'] == ''),
+                  'Variable'].sort_values().values, n, width)
 
 def imprime_temas():
     imprime_array(
@@ -416,12 +420,14 @@ def imprime_unidades():
     imprime_array(
         df_variables['Unidad'].drop_duplicates(keep='first').sort_values().values)
 
-def pone_tema_por_prefijo_variable(df_variables, detalles:str, prefijos:tuple):
+def pone_tema_por_prefijo_variable(df_variables, detalles:str,
+                                   prefijos:tuple):
     '''
-    A partir de los detalles asigna las columnas Tema, Cifra, Horizonte, y
-    Unidad a los renglones del DataFrame que no tengan Tema asignado y cuya
-    columna Variable comience con uno de los prefijos.
-    Se espera que detalles tenga el formato: 'tema: unidad; cifra; horizonte'.
+    A partir de los detalles asigna las columnas Tema, Cifra, Horizonte,
+    y Unidad a los renglones del DataFrame que no tengan Tema asignado y
+    cuya columna Variable comience con uno de los prefijos.
+    Se espera que detalles tenga el formato:
+        'tema: unidad; cifra; horizonte'.
     '''
     lst_temas=[un_tema.strip() for un_tema in detalles.split(';')]
     if len(lst_temas) < 3: lst_temas.append('')
@@ -524,7 +530,7 @@ pone_tema_por_prefijo_variable(df_variables,
 
 imprime_siguentes_variables(df_variables)
 # Ver su IdVariable también.
-print(df_variables.query('PrimerasLetras == "Inflaci" and Tema==""'))
+print(df_variables.query('Prefijo == "Inflaci" and Tema==""'))
 # También se consultó: https://www.banxico.org.mx/SieInternet/consultarDirectori
 # oInternetAction.do?sector=24&accion=consultarCuadro&idCuadro=CR155&locale=es
 pone_tema_por_prefijo_variable(df_variables,
@@ -689,7 +695,7 @@ else:
 
 # %%
 # Quita la columna del prefijo que se usó para encontrar categorías.
-df_variables = df_variables.drop(['PrimerasLetras'], axis = 1)
+df_variables = df_variables.drop(['Prefijo'], axis = 1)
 
 numero_temas = df_variables[['Tema']].drop_duplicates(keep='first').shape[0]
 if numero_temas != 26:
