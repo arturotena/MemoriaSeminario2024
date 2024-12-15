@@ -46,6 +46,30 @@
 
 
 
+la menor cantidad de tablas
+
+mencionar   por los nombres de las columnas se puede saber tambien si son categoricas pero tienen muchos valores esto es porque los nombres relativos hacen referencia a variables que se estan midiendo en lugar de columnas son renglones
+
+
+en el marco teorico explicar brevement los temas
+
+
+
+
+
+
+# Hipótesis: el IdAnalista con valor a cero es un placeholder para valores que no se tienen el desagregado por analista.
+# Hipótesis alternativa: sólo el analista 0 tiene respuesta en algunas (fecha,variable).
+# Hipótesis nula: más de un analista tiene respuesta en las (fecha,variable) en las que el analista 0 tiene respuesta.
+df_fecha_variable_participa_analista0=df.query('IdAnalista==0')[['Fecha','IdVariable']]
+print(df_fecha_variable_participa_analista0)
+print(f'En {df_fecha_variable_participa_analista0.shape[0]} variables de distintas fechas participa el analista 0')
+# Analizando todos las fechas variable donde participa el analista 0:
+df_participa_analista0=pd.merge(df,df_fecha_variable_participa_analista0,how='inner', on=['Fecha','IdVariable'])
+df_participa_analista0[['Fecha','IdVariable','IdAnalista']].groupby(['IdAnalista']).count()
+print('Se observa que en estas fechas y variables sólo participó el analista 113.')
+# No se pudo probar la hipótesis nula.
+# Por lo tanto, el analista 0 puede ser un placeholder.
 
 
 
