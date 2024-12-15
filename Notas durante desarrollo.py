@@ -1,3 +1,60 @@
+# Dudas
+
+// discusion y conclusiones
+
+// metricas de neural/natural languaje/ procesing
+
+
+// explicar porque usar mineria de datos, explicar cuales tecnicas se usaron
+
+
+
+
+
+
+
+// tomar el codigo, buscar su base teorica matematica y plasmarlo en marco teorico
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # instalaciones
 
     !pip install jupyterlab
