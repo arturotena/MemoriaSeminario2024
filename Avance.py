@@ -12,7 +12,7 @@
 import sys
 version_python = sys.version.split()[0]
 print(f'Python: {version_python}.')
-if version_python == '3.12.5':
+if version_python == '3.13.0':
     print('Python OK')
 else:
     reporta_error(f'Versión inesperada de Python: {version_python}.')
@@ -46,19 +46,18 @@ print('Directorio inicial:', os.getcwd())
 try:
     os.chdir('d:/')
     os.chdir('Proyectos/RStudioProyectos/GitHub')
-    os.chdir('datasets')
-except FileNotFoundError as e:
-    # No estamos en Windows
-    pass
-
-try:
-    os.chdir(os.path.expanduser("~"))
-    os.chdir('Downloads')
     os.chdir('MemoriaSeminario2024')
     os.chdir('datasets')
 except FileNotFoundError as e:
-    # No estamos en Mac
-    pass
+    # No estamos en Windows
+    try:
+        os.chdir(os.path.expanduser("~"))
+        os.chdir('Downloads')
+        os.chdir('MemoriaSeminario2024')
+        os.chdir('datasets')
+    except FileNotFoundError as e:
+        # No estamos en Mac
+        pass
 
 print('Directorio actual:', os.getcwd())
 if not os.getcwd().endswith('datasets'):
@@ -105,7 +104,7 @@ print(f'Seaborn: {sns.__version__}.')
 if pd.__version__ != '2.2.3':
     reporta_error(f'Versión inesperada de Pandas: {pd.__version__}.')
 
-if np.__version__ != '2.2.0':
+if np.__version__ != '2.1.3':
     reporta_error(f'Versión inesperada de Numpy: {np.__version__}.')
 
 if mpl_version != '3.9.2':
