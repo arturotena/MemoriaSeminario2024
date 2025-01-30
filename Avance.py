@@ -878,3 +878,18 @@ plt.close()
 # En esta figura se demuestra que estuvo correcta la clasificación de las
 # variables por tema dado que las variables del mismo tema y distinto horizonte
 # muestran un alto valor de correlación.
+
+%% 6. Categorización usando NLP, clasificación de texto no supervisado
+
+https://www.sciencedirect.com/science/article/pii/S1877050922012947
+
+
+https://www.geeksforgeeks.org/what-is-text-clustering-in-nlp/
+
+https://medium.com/@power.up1163/unsupervised-text-classification-with-topic-models-and-good-old-human-reasoning-da297bed7362
+
+https://www.striveworks.com/blog/unsupervised-text-classification-how-to-use-llms-to-categorize-natural-language-data
+https://towardsdatascience.com/unsupervised-text-classification-with-lbl2vec-6c5e040354de
+https://medium.com/@mohamad.razzi.my/clustering-methods-for-unsupervised-text-classification-af4cddb0c9ff
+https://spotintelligence.com/2023/01/17/text-clustering-algorithms/
+https://www.reddit.com/r/datascience/comments/v0a7hm/nlp_embedding_methods_for_text_clustering/
